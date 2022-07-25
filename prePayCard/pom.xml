@@ -52,6 +52,14 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <systemPath>${project.basedir}/lib/wasmer-jni-amd64-linux-0.3.0.jar</systemPath>
+            <scope>system</scope>
+            <groupId>wasmer-jni</groupId>
+            <artifactId>wasmer-jni-amd64-linux</artifactId>
+            <version>0.3.0</version>
+        </dependency>
     </dependencies>
 
     <build>
