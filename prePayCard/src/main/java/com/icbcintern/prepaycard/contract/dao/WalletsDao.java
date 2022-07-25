@@ -15,7 +15,7 @@ public class WalletsDao {
     private static final String password;
 
     static {
-        url = "jdbc:mysql://localhost2:3306/icbc?useSSL=false&useServerPrepStmts=true";
+        url = "jdbc:mysql://localhost:3306/icbc?useSSL=false&useServerPrepStmts=true";
         username = "root";
         password = "root";
     }
