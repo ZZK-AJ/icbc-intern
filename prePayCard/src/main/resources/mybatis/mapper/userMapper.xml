@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.icbcintern.prepaycard.mapper.UserMapper">
+    <!-- 添加用户信息-->
+<!--    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id" keyColumn="id"-->
+<!--            parameterType="com.icbcintern.prepaycard.pojo.User">-->
+<!--        insert into-->
+<!--            user(id,user_name,user_age)-->
+<!--        values (#{id},#{userName},#{userAge})-->
+<!--    </insert>-->
+
+    <!--通过iD查找用户信息-->
+<!--    <select id="getUserInfoById" resultType="com.icbcintern.prepaycard.pojo.User" parameterType="int">-->
+<!--        select *-->
+<!--        from user-->
+<!--        where id=#{id}-->
+<!--    </select>-->
+
+    <!--查询所有用户信息-->
+    <!--    <select id="queryUserInfo" resultType="com.icbcintern.prepaycard.pojo.User">-->
+    <!--        select *-->
+    <!--        from user-->
+    <!--    </select>-->
+
+
+    <!--修改用户信息-->
+<!--    <update id="updateUserInfoById" parameterType="com.icbcintern.prepaycard.pojo.User">-->
+<!--        update user-->
+<!--        set id=#{id},user_name=#{userName},user_age=#{userAge}-->
+<!--        where id=#{id}-->
+<!--    </update>-->
+
+    <!--删除用户信息-->
+<!--    <delete id="deleteUserInfoById" parameterType="int">-->
+<!--        delete-->
+<!--        from user-->
+<!--        where id=#{id}-->
+<!--    </delete>-->
+</mapper>
