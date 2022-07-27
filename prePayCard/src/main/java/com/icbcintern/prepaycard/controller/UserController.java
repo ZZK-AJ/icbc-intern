@@ -17,7 +17,7 @@ public class UserController {
 
     /**
      * user 注册
-     * todo 后续需要自动生成钱包id 用户及钱包的关系表，钱包、储蓄账户表 的记录
+     * todo 用户注册成功后，自动生成钱包id 用户及钱包的关系表，钱包、储蓄账户表 的记录
      */
     @PostMapping("/UserRegister")
     public Result UserRegister(@RequestBody Map<String,String> userMap){
@@ -42,6 +42,7 @@ public class UserController {
         boolean r= userService.insertUser(user);
         if (r){
             result.setMsg("用户注册成功");
+
         }else {
             result.setCode(1);
             result.setMsg("用户注册失败");
@@ -143,7 +144,7 @@ public class UserController {
     /**
      * 用户修改密码
      */
-    @PostMapping("/changePasswd")
+    @PostMapping("/changeUserPasswd")
     public Result changePasswd(@RequestBody Map<String, String> userMap) {
         Result result = new Result();
 //        todo 修改密码
