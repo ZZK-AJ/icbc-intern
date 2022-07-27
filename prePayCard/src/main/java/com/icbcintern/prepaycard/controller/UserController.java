@@ -1,7 +1,7 @@
 package com.icbcintern.prepaycard.controller;
 
 import com.icbcintern.prepaycard.pojo.User;
-import com.icbcintern.prepaycard.service.impl.UserServiceImpl;
+import com.icbcintern.prepaycard.service.UserService;
 import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 public class UserController {
     @Autowired
-    UserServiceImpl userService;
+    UserService userService;
 
     /**
      * user 注册
