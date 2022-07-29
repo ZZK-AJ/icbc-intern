@@ -15,7 +15,7 @@ public class WalletsDao {
     private static final String password;
 
     static {
-        url = "jdbc:mysql://localhost:3306/icbc?useSSL=false&useServerPrepStmts=true";
+        url = "jdbc:mysql://localhost2:3306/prePayCard?useSSL=false&useServerPrepStmts=true";
         username = "root";
         password = "root";
     }
@@ -23,7 +23,7 @@ public class WalletsDao {
     public static long QueryBalanceById(long wallet_id) {
         Connection conn = getConnect();
         PreparedStatement pstmt = null;
-        String sql = "select balance from wallets where wallet_id = ?";
+        String sql = "select balance from wallet where id = ?";
         long balance = -1;
 
         try {
@@ -59,8 +59,8 @@ public class WalletsDao {
     public static int Transfer(long from_id,long to_id,long money) {
         Connection conn = getConnect();
         PreparedStatement pstmt = null;
-        String sql = "select balance from wallets where wallet_id = ?";
-        String sql_update = "update wallets set balance = ? where wallet_id =?";
+        String sql = "select balance from wallet where id = ?";
+        String sql_update = "update wallet set balance = ? where id =?";
         int finish = 0;
 
         try {
