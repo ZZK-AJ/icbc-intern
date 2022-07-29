@@ -10,37 +10,18 @@ package com.icbcintern.prepaycard.pojo;
  * )ENGINE=InnoDB DEFAULT CHARACTER SET=utf8 COMMENT='商户表';
  */
 
-public class Merchant {
-    private Integer id;
-    private String merchantName;
+public class Merchant extends Entity {
+
     private String merchantInfo;
-    private String loginPasswd;
 
     public Merchant() {
     }
 
     public Merchant(Integer id, String merchantName, String merchantInfo, String loginPasswd) {
-        this.id = id;
-        this.merchantName = merchantName;
+
         this.merchantInfo = merchantInfo;
-        this.loginPasswd = loginPasswd;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getMerchantName() {
-        return merchantName;
-    }
-
-    public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
-    }
 
     public String getMerchantInfo() {
         return merchantInfo;
@@ -50,11 +31,4 @@ public class Merchant {
         this.merchantInfo = merchantInfo;
     }
 
-    public String getLoginPasswd() {
-        return loginPasswd;
-    }
-
-    public void setLoginPasswd(String loginPasswd) {
-        this.loginPasswd = loginPasswd;
-    }
 }

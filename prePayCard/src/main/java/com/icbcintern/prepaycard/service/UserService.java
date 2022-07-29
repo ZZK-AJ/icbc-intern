@@ -23,4 +23,6 @@ public interface UserService {
     //删除
     boolean deleteUserById(int id);
 
+    // 增加 用户钱包关系表
+    boolean insertUserWallet(String walletID, int userID);
 }

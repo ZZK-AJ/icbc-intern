@@ -19,8 +19,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public boolean insertUser(User user) {
-        if (user.getUserName() != null && !"".equals(user.getUserName())) {
+        if (user.getName() != null && !"".equals(user.getName())) {
             try {
+                System.out.println(user.getName());
                 int effectNum = userMapper.insertUser(user);
 
                 if (effectNum > 0) {
@@ -103,6 +104,22 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Override
+    public boolean insertUserWallet(String walletID, int userId) {
+        try {
+            int effectNum = userMapper.insertUserWallet(walletID, userId);
+
+            if (effectNum > 0) {
+                // 如果影响行数大于0，那么就是增加成功
+                return true;
+            } else {
+                throw new RuntimeException("插入信息失败,插入行数有误");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("插入信息失败了:" + e.getMessage());
         }
     }
 }

@@ -1,18 +1,25 @@
 package com.icbcintern.prepaycard.controller;
 
 import com.icbcintern.prepaycard.pojo.Merchant;
+import com.icbcintern.prepaycard.pojo.User;
+import com.icbcintern.prepaycard.pojo.Wallet;
 import com.icbcintern.prepaycard.service.MerchantService;
+import com.icbcintern.prepaycard.service.WalletService;
+import com.icbcintern.prepaycard.utils.JwtTools;
 import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 public class MerchantController {
     @Autowired
     MerchantService merchantService;
+    @Autowired
+    WalletService walletService;
 
     /**
      * 商家 注册
@@ -24,24 +31,40 @@ public class MerchantController {
         Result result = new Result();
 
         if (merchantMap.get("merchantName").isEmpty() || merchantMap.get("loginPasswd").isEmpty()) {
-            result.setMsg("商户名和密码不能为空");
+            result.setMsg("注册失败，商户名和密码不能为空");
             return result;
         }
-
-        // 查询是否有重复的用户名
         Merchant existMerchant = merchantService.getMerchantByName(merchantMap.get("merchantName"));
         if (existMerchant != null) {
-            result.setMsg("该商户名已存在");
+            result.setMsg("注册失败，该商户名已存在");
             return result;
         }
 
-        merchant.setMerchantName(merchantMap.get("merchantName"));
+        merchant.setName(merchantMap.get("merchantName"));
         merchant.setLoginPasswd(merchantMap.get("loginPasswd"));
         merchant.setMerchantInfo(merchantMap.get("merchantInfo"));
         boolean r = merchantService.insertMerchant(merchant);
         if (r) {
-            result.setMsg("商户注册成功");
-
+            Wallet wallet = new Wallet();
+            wallet.setWalletId(UUID.randomUUID().toString());
+            wallet.setType(2);   // 钱包类型，用户 1, 商户 2, 运营方 3, 冻结 0
+            long balance = 1000000 + (long) (Math.random() * (5000000 - 1000000 + 1));  // 余额默认范围 10000-50000
+            wallet.setBalance(balance);
+            Boolean res = walletService.insertWallet(wallet);
+            if (res) {
+                Merchant registeredMerchant = merchantService.getMerchantByName(merchant.getName());
+                boolean b = merchantService.insertMerchantWallet(wallet.getWalletId(), registeredMerchant.getId());
+                if (b) {
+                    result.setMsg("商户注册成功，添加钱包及关系表成功");
+                    return result;
+                } else {
+                    result.setCode(1);
+                    result.setMsg("商户注册失败,未成功添加商户钱包关系表");
+                }
+            } else {
+                result.setCode(1);
+                result.setMsg("商户注册失败,未成功添加钱包");
+            }
         } else {
             result.setCode(1);
             result.setMsg("商户注册失败");
@@ -69,11 +92,11 @@ public class MerchantController {
      * 查询所有 merchant
      */
     @GetMapping("/merchantInfo")
-    public Result getAllUserInfo() {
+    public Result getAllMerchantInfo() {
         Result result = new Result();
-        List<Merchant> userList = merchantService.queryMerchantInfo();
-        if (userList != null) {
-            result.setData(userList);
+        List<Merchant> merchantList = merchantService.queryMerchantInfo();
+        if (merchantList != null) {
+            result.setData(merchantList);
         } else {
             result.setCode(1);
             result.setMsg("用户查询失败");
@@ -90,7 +113,7 @@ public class MerchantController {
         Merchant merchant = new Merchant();
         // todo 根据对应商户的 id 赋值
         merchant.setId(Integer.valueOf(merchantMap.get("id")));
-        merchant.setMerchantName(merchantMap.get("merchantName"));
+        merchant.setName(merchantMap.get("merchantName"));
         merchant.setLoginPasswd(merchantMap.get("loginPasswd"));
         merchant.setMerchantInfo(merchantMap.get("merchantInfo"));
         boolean r = merchantService.updateMerchantById(merchant);
@@ -133,6 +156,9 @@ public class MerchantController {
         }
         if (existMerchant.getLoginPasswd().equals(merchantMap.get("loginPasswd"))) {
             result.setMsg("商户登录中");
+            // 返回 token
+            String token = JwtTools.createToken(existMerchant);
+            result.setData(token);  // 返回 token
         } else {
             result.setMsg("商户登录失败，查询登录密码是否错误");
             result.setCode(1);

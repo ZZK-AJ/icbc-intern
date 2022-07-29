@@ -21,7 +21,7 @@ public class MerchantServiceImpl implements MerchantService {
     @Transactional
     @Override
     public boolean insertMerchant(Merchant merchant) {
-        if (merchant.getMerchantName() != null && !"".equals(merchant.getMerchantName())) {
+        if (merchant.getName() != null && !"".equals(merchant.getName())) {
             try {
                 int effectNum = merchantMapper.insertMerchant(merchant);
 
@@ -105,6 +105,20 @@ public class MerchantServiceImpl implements MerchantService {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    @Override
+    public boolean insertMerchantWallet(String walletId, int merchantId) {
+        try {
+            int effectNum = merchantMapper.insertMerchantWallet(walletId, merchantId);
+            if (effectNum > 0) {
+                return true;
+            } else {
+                throw new RuntimeException("插入信息失败,插入行数有误");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("插入信息失败了:" + e.getMessage());
         }
     }
 }

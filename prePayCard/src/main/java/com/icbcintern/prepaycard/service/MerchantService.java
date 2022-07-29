@@ -22,4 +22,7 @@ public interface MerchantService {
 
     //删除
     boolean deleteMerchantById(int id);
+
+    // 增加 商户钱包关系表
+    boolean insertMerchantWallet(String walletId, int merchantId);
 }
