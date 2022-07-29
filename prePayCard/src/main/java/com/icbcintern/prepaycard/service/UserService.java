@@ -5,7 +5,7 @@ import com.icbcintern.prepaycard.pojo.User;
 import java.util.List;
 
 public interface UserService {
-    //添加
+    // 注册用户
     boolean insertUser(User user);
 
     //按id查找
@@ -23,4 +23,6 @@ public interface UserService {
     //删除
     boolean deleteUserById(int id);
 
+    // 增加 用户钱包关系表
+    boolean insertUserWallet(String walletID, int userID);
 }

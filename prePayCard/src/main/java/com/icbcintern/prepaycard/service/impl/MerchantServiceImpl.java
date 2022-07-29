@@ -1,32 +1,33 @@
 package com.icbcintern.prepaycard.service.impl;
 
-import com.icbcintern.prepaycard.mapper.UserMapper;
-import com.icbcintern.prepaycard.pojo.User;
-import com.icbcintern.prepaycard.service.UserService;
+import com.icbcintern.prepaycard.mapper.MerchantMapper;
+import com.icbcintern.prepaycard.pojo.Merchant;
+
+import com.icbcintern.prepaycard.service.MerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class MerchantServiceImpl implements MerchantService {
     @Autowired
-    UserMapper userMapper;
+    MerchantMapper merchantMapper;
 
     /**
-     * 添加 user
+     * 添加 merchant
      */
     @Transactional
     @Override
-    public boolean insertUser(User user) {
-        if (user.getName() != null && !"".equals(user.getName())) {
+    public boolean insertMerchant(Merchant merchant) {
+        if (merchant.getName() != null && !"".equals(merchant.getName())) {
             try {
-                System.out.println(user.getName());
-                int effectNum = userMapper.insertUser(user);
+                int effectNum = merchantMapper.insertMerchant(merchant);
 
                 if (effectNum > 0) {
                     // 如果影响行数大于0，那么就是增加成功
-                    System.out.println("增加成功，主键为：" + user.getId());
+                    System.out.println("增加成功，主键为：" + merchant.getId());
                     return true;
                 } else {
                     throw new RuntimeException("插入信息失败,插入行数有误");
@@ -42,42 +43,42 @@ public class UserServiceImpl implements UserService {
 
 
     /**
-     * 按id查找 user
+     * 按id查找 merchant
      */
     @Override
-    public User getUserById(int id) {
-        return userMapper.getUserInfoById(id);
+    public Merchant getMerchantById(int id) {
+        return merchantMapper.getMerchantInfoById(id);
     }
 
 
     /**
-     * 按 userName 查找 user
+     * 按 userName 查找 merchant
      */
     @Override
-    public User getUserByUserName(String userName) {
-        return userMapper.getUserByUserName(userName);
+    public Merchant getMerchantByName(String merchantName) {
+        return merchantMapper.getMerchantByName(merchantName);
     }
 
     /**
-     * 查询所有 user
+     * 查询所有 merchant
      */
     @Override
-    public List<User> queryUserInfo() {
-        return userMapper.queryUserInfo();
+    public List<Merchant> queryMerchantInfo() {
+        return merchantMapper.queryMerchantInfo();
     }
 
     /**
-     * 更新 user
+     * 更新 merchant
      */
     @Transactional
     @Override
-    public boolean updateUserById(User user) {
-        if (user.getId() != null) {
+    public boolean updateMerchantById(Merchant merchant) {
+        if (merchant.getId() != null) {
             try {
-                int effectNum = userMapper.updateUserById(user);
+                int effectNum = merchantMapper.updateMerchantById(merchant);
                 if (effectNum > 0) {
                     //如果影响行数大于0，更新成功
-                    System.out.println("更新成功，主键为：" + user.getId());
+                    System.out.println("更新成功，主键为：" + merchant.getId());
                     return true;
                 } else {
                     throw new RuntimeException("更新信息失败,插入行数有误");
@@ -93,12 +94,12 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 删除 user
+     * 删除 merchant
      */
     @Override
-    public boolean deleteUserById(int id) {
+    public boolean deleteMerchantById(int id) {
         try {
-            int effectNum = userMapper.deleteUserById(id);
+            int effectNum = merchantMapper.deleteMerchantById(id);
             return effectNum > 0;
 
         } catch (Exception e) {
@@ -108,12 +109,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean insertUserWallet(String walletID, int userId) {
+    public boolean insertMerchantWallet(String walletId, int merchantId) {
         try {
-            int effectNum = userMapper.insertUserWallet(walletID, userId);
-
+            int effectNum = merchantMapper.insertMerchantWallet(walletId, merchantId);
             if (effectNum > 0) {
-                // 如果影响行数大于0，那么就是增加成功
                 return true;
             } else {
                 throw new RuntimeException("插入信息失败,插入行数有误");
