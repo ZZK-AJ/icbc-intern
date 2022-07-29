@@ -59,6 +59,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.9</version>
+        </dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.11.5</version>
@@ -89,6 +94,12 @@
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
 
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.9</version>
+        </dependency>
+        <!--wasmer-java本地依赖-->
         <dependency>
             <systemPath>${project.basedir}/lib/wasmer-jni-amd64-linux-0.3.0.jar</systemPath>
             <scope>system</scope>
