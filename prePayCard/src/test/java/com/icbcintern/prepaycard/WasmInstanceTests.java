@@ -1,12 +1,15 @@
 package com.icbcintern.prepaycard;
 
-import com.icbcintern.prepaycard.contract.InstanceUtils;
-import com.icbcintern.prepaycard.contract.StringUtils;
+import com.icbcintern.prepaycard.contract.service.ContractService;
+import com.icbcintern.prepaycard.contract.utils.InstanceUtils;
+import com.icbcintern.prepaycard.contract.utils.StringUtils;
 import com.icbcintern.prepaycard.mapper.WalletMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.wasmer.Instance;
+
+import java.io.File;
 
 /**
  * description:
@@ -18,6 +21,7 @@ public class WasmInstanceTests {
 
     @Test
     void wasmInstance() throws Exception {
+        System.out.println(new File("E:/project/icbc-intern/prePayCard/src/main/resources/lib.wasm").toURI());
         String wasmPaths = Test.class.getClassLoader().getResource("lib.wasm").toURI().toString();
         Instance instance = InstanceUtils.getWasmInstance(wasmPaths);
         {
@@ -82,5 +86,18 @@ public class WasmInstanceTests {
             long end = System.currentTimeMillis();
             System.out.println("结果:" + res + " 耗时:" + (end - start) + "ms");
         }
+    }
+    @Autowired
+    ContractService contractService;
+    @Test
+    void signContract() {
+        int res = 0;
+        try {
+            res = contractService.signContract(0,4);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("实例id"+res);
+
     }
 }

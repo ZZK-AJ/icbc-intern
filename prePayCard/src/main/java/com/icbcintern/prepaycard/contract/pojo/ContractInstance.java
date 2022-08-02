@@ -7,14 +7,16 @@ import lombok.NoArgsConstructor;
 /**
  * description:
  * @author: He Yihui
- * @create: 2022-07-28 17:05
+ * @create: 2022-08-01 14:52
  **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Contract {
-    private Integer contractId;
-    private String path;
-    private String name;
+public class ContractInstance {
+    private Integer instanceId;
+    private Integer merchantWalletId;
+    private Integer contractWalletId;
     private Integer state;
+    private Integer discount;
+    private Long giftBalance;
 }

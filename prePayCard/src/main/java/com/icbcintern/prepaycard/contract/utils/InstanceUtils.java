@@ -1,4 +1,4 @@
-package com.icbcintern.prepaycard.contract;
+package com.icbcintern.prepaycard.contract.utils;
 
 import com.icbcintern.prepaycard.contract.function.ImFunc;
 import com.icbcintern.prepaycard.contract.function.ImQueryBalanceByWalletId;

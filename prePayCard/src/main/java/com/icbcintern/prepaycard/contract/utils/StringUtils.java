@@ -1,4 +1,4 @@
-package com.icbcintern.prepaycard.contract;
+package com.icbcintern.prepaycard.contract.utils;
 
 import org.wasmer.Instance;
 import org.wasmer.Memory;

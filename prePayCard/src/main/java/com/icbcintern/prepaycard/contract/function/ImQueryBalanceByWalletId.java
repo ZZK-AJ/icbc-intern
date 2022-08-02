@@ -2,7 +2,7 @@ package com.icbcintern.prepaycard.contract.function;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.icbcintern.prepaycard.contract.StringUtils;
+import com.icbcintern.prepaycard.contract.utils.StringUtils;
 import com.icbcintern.prepaycard.mapper.WalletMapper;
 import com.icbcintern.prepaycard.pojo.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;

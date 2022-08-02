@@ -24,6 +24,10 @@ public class ImportFunction {
             functionList.add(iqb);
             functionList.add(iqbbw);
             functionList.add(it);
+            functionList.add(new SqlSelectPayedCard());
+            functionList.add(new SqlSelectCard());
+            functionList.add(new SqlUpdateWallet());
+            functionList.add(new SqlInsertContractInstance());
         }
     }
 }
