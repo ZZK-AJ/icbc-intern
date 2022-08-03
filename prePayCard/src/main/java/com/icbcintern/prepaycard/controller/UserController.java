@@ -156,8 +156,7 @@ public class UserController {
             result.setCode(1);
             return result;
         }
-        User user = userService.getUserByUserName(userMap.get("userName"));
-        if (user.getLoginPasswd().equals(userMap.get("loginPasswd"))) {
+        if (existUser.getLoginPasswd().equals(userMap.get("loginPasswd"))) {
             result.setMsg("用户登录中");
 //            String token = TokenUtil.genToken(existUser);
             String token = JwtTools.createToken(existUser);

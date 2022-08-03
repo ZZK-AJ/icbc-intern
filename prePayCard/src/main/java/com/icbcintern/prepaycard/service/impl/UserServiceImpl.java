@@ -6,6 +6,7 @@ import com.icbcintern.prepaycard.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -21,12 +22,11 @@ public class UserServiceImpl implements UserService {
     public boolean insertUser(User user) {
         if (user.getName() != null && !"".equals(user.getName())) {
             try {
-                System.out.println(user.getName());
+//                System.out.println(user.getName());
                 int effectNum = userMapper.insertUser(user);
 
                 if (effectNum > 0) {
                     // 如果影响行数大于0，那么就是增加成功
-                    System.out.println("增加成功，主键为：" + user.getId());
                     return true;
                 } else {
                     throw new RuntimeException("插入信息失败,插入行数有误");
@@ -121,5 +121,10 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new RuntimeException("插入信息失败了:" + e.getMessage());
         }
+    }
+
+    @Override
+    public String getWalletIdByUserId(int userId) {
+        return userMapper.getWalletIdByUserId(userId);
     }
 }
