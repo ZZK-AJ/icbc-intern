@@ -39,5 +39,4 @@ public interface WalletMapper {
     @Update("update wallet set id=#{id},balance=#{balance},type=#{type} where wallet_id=#{walletId}")
     int updateWalletByWalletId(Wallet wallet);
 
-
 }

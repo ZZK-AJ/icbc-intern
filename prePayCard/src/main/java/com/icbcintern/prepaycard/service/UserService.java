@@ -25,4 +25,7 @@ public interface UserService {
 
     // 增加 用户钱包关系表
     boolean insertUserWallet(String walletID, int userID);
+
+    // 根据用户id 查询用户钱包 id
+    String getWalletIdByUserId(int userId);
 }

@@ -1,6 +1,8 @@
 package com.icbcintern.prepaycard.utils;
 
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,17 +19,17 @@ public class Interceptor implements HandlerInterceptor {
         System.out.println("执行 UserLoginInterceptor 拦截器的 preHandle 方法");
         try {
             response.setCharacterEncoding("UTF-8");
-            //获取 header里的token
+            //获取 token
             final String token = request.getHeader("authorization");
-//            System.out.println(token);
 
             if (token == null) {
                 response.getWriter().write("未登录，请登录后获取 token！");
                 return false;
             }
 
-            Map<String, Claim> userData = JwtTools.verifyToken(token);
-            if (userData == null) {
+//            Map<String, Claim> userData = JwtTools.verifyToken(token);
+            DecodedJWT jwt = JwtTools.verifyToken(token);
+            if (jwt == null || StringUtils.isEmpty(jwt.getClaim("userName").asString())) {
                 response.getWriter().write("token 不合法！");
                 return false;
             }

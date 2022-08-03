@@ -25,5 +25,5 @@ public interface WalletService {
 
     Boolean updateWalletByWalletId(Wallet wallet);
 
-    Boolean transfer(Wallet from,Wallet to,Long money);
+    Boolean transfer(Wallet from, Wallet to, Long money);
 }

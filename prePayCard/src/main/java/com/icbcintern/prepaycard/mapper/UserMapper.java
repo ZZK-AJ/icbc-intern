@@ -52,4 +52,11 @@ public interface UserMapper {
      */
     @Insert("insert into userWallet(user_id,wallet_id) values (#{id},#{walletID})")
     int insertUserWallet(String walletID, int id);
+
+    /**
+     * 根据用户id 查询用户钱包 id
+     */
+    @Select("select wallet_id from userWallet where user_id=#{userId}")
+    String getWalletIdByUserId(int userId);
+
 }
