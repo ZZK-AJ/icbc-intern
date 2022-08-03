@@ -14,9 +14,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ContractInstance {
     private Integer instanceId;
-    private Integer merchantWalletId;
-    private Integer contractWalletId;
+    private String merchantWalletId;
+    private String contractWalletId;
     private Integer state;
     private Integer discount;
     private Long giftBalance;
+    private Integer contractId;
 }

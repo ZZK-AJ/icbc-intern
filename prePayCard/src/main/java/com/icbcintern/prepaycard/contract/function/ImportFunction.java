@@ -28,6 +28,10 @@ public class ImportFunction {
             functionList.add(new SqlSelectCard());
             functionList.add(new SqlUpdateWallet());
             functionList.add(new SqlInsertContractInstance());
+            functionList.add(new SqlSelectInstance());
+            functionList.add(new SqlUpdateInstance());
+            functionList.add(new ImQueryWalletIdByCardId());
+            functionList.add(new SOUT());
         }
     }
 }

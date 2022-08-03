@@ -36,7 +36,7 @@ public class StringUtils {
         if (allocate==null){
             throw new Exception("方法allocate未定义");
         }
-        int paramPtr = (int) allocate.apply(bytes.length+1)[0];
+        int paramPtr = (int) allocate.apply(bytes.length+10)[0];
         return paramPtr;
     }
 
@@ -56,8 +56,10 @@ public class StringUtils {
         Memory memory = instance.exports.getMemory("memory");
         ByteBuffer mbf = memory.buffer();
         byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
+        byte[] new_bytes = new byte[bytes.length+10];
+        System.arraycopy(bytes, 0, new_bytes, 0, bytes.length);
         mbf.position(ptr);
-        mbf.put(bytes);
+        mbf.put(new_bytes);
     }
     public int addString(String str) throws Exception {
         if (instance==null){

@@ -1,7 +1,5 @@
 package com.icbcintern.prepaycard.contract.function;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icbcintern.prepaycard.contract.utils.StringUtils;
 import com.icbcintern.prepaycard.mapper.WalletMapper;
 import com.icbcintern.prepaycard.pojo.Wallet;
@@ -27,9 +25,9 @@ public class ImQueryBalanceByWalletId extends ImFunc{
     }
 
     public ImQueryBalanceByWalletId() {
-        super.name="im_query_balance_by_wallet_id";
+        super.name="im_query_balance";
         super.params.add(Type.I32);
-        results.add(Type.I32);
+        results.add(Type.I64);
     }
 
     @Override
@@ -55,22 +53,12 @@ public class ImQueryBalanceByWalletId extends ImFunc{
             wallet_ = walletMapper.getWalletByWalletId(param);
         }
 
-        ObjectMapper jackson = new ObjectMapper();
-        String wallet = null;
-        try {
-            wallet = jackson.writeValueAsString(wallet_);
-        } catch (JsonProcessingException e) {
-            wallet = "{}";
+        if (wallet_==null){
+            argv.set(0, -1);
+        }else{
+            argv.set(0, wallet_.getBalance());
         }
 
-        int walletPtr = 0;
-        try {
-            walletPtr = stringUtils.addString(wallet);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        argv.set(0, walletPtr);
     }
 }
 

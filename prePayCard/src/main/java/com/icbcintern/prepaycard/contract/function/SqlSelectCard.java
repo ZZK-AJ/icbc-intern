@@ -29,7 +29,7 @@ public class SqlSelectCard extends ImFunc{
             //TODO 从数据库中取出
             // int cardId=argv.get(0).intValue();
             // Card = CardMapper.xxx(cardId);
-            res = jackson.writeValueAsString(new Card(10000,2000,88));
+            res = jackson.writeValueAsString(new Card(10000,2000,88,"fb89d642-a24e-4c0f-8161-8312f8aea9f4"));
             System.out.println(res);
             resPtr = stringUtils.addString(res);
         } catch (Exception e) {
@@ -43,5 +43,6 @@ public class SqlSelectCard extends ImFunc{
         long cardAmount;
         long giftAmount;
         int discountRate;
+        String walletId;
     }
 }

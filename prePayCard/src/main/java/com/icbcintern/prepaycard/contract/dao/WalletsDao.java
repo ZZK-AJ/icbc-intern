@@ -61,7 +61,7 @@ public class WalletsDao {
         PreparedStatement pstmt = null;
         String sql = "select balance from wallet where id = ?";
         String sql_update = "update wallet set balance = ? where id =?";
-        int finish = 0;
+        int finish = -1;
 
         try {
             //查询转帐方余额
@@ -98,7 +98,7 @@ public class WalletsDao {
             pstmt.executeUpdate();
 
             conn.commit();//提交数据
-            finish=1;
+            finish=0;
         } catch (Exception e) {
             e.printStackTrace();
             try {
