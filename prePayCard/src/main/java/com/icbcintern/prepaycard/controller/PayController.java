@@ -2,6 +2,7 @@ package com.icbcintern.prepaycard.controller;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.icbcintern.prepaycard.contract.service.ContractService;
 import com.icbcintern.prepaycard.pojo.*;
 import com.icbcintern.prepaycard.service.CardService;
 import com.icbcintern.prepaycard.service.PayService;
@@ -27,6 +28,8 @@ public class PayController {
     UserService userService;
     @Autowired
     WalletService walletService;
+    @Autowired
+    ContractService contractService;
 
     /**
      * 用户购买预付卡
@@ -37,7 +40,7 @@ public class PayController {
      */
     @PostMapping("/pay/payedCard/{id}")
     public Result insertPayCard(@RequestHeader("Authorization") String token,
-                                @PathVariable("id") int cardTypeId) {
+                                @PathVariable("id") int cardTypeId) throws Exception {
         Result result = new Result();
         DecodedJWT jwt = JwtTools.verifyToken(token);   // 解析 token, 获取用户名
         if (jwt == null || StringUtils.isEmpty(jwt.getClaim("userName").asString())) {
@@ -64,93 +67,83 @@ public class PayController {
 
         PayedCard payCard = new PayedCard();
         payCard.setCardStatus(PayedCard.STATUS_TYPE_NORMAL);  // 设置预付卡状态为正常
-        payCard.setPayedCardId(cardType.getId());
+        payCard.setCardId(cardType.getId());
         payCard.setMerchantId(cardType.getMerchantId());
         payCard.setWalletId(walletId);
 
-        // todo 调用智能合约 进行签约 获取合约实例 id(instance_id)
+        // 调用智能合约进行签约
+        payCard.setInstanceId(0);  // 默认先置为 0，签约后返回实际 instance_id
+        payService.insertPayCard(payCard);  // 用户购买预付卡之后，写入预付卡表
 
-        payCard.setInstanceId(666);
-
-        // 用户购买预付卡之后，写入预付卡表
-        payService.insertPayCard(payCard);
+        int instanceId = contractService.signContract(payCard.getId(), 1);
+        payCard.setInstanceId(instanceId);
+        payService.updatePayCardById(payCard); // 用户购买预付卡之后，写入预付卡表
 
         // 通过 用户id 查 用户钱包关系表 用户钱包id
         String userWalletId = userService.getWalletIdByUserId(user.getId());
         // 写入用户预付卡关系表
-        payService.insertUserPayedCard(user.getId(), payCard.getId(), userWalletId);  // 写入用户预付卡关系表
+        payService.insertUserPayedCard(user.getId(), payCard.getId(), userWalletId);
         // 写入商户预付卡关系表
         payService.insertMerchantPayedCard(payCard.getMerchantId(), payCard.getId());
 
-
         // 从用户钱包 转账到 运营方的冻结钱包
         Wallet operatorWallet = walletService.getWalletByWalletId(walletId);
-
 
         Wallet userWallet = walletService.getWalletByWalletId(userWalletId);
         long transferMoney = cardType.getCardAmount() + cardType.getGiftAmount();
         walletService.transfer(userWallet, operatorWallet, transferMoney);  // 购卡之后转账到冻结账户
 
-        return Result.ok();
+        return result;
     }
+
 
     @GetMapping("/pay/id/{id}")
     public Result getById(@PathVariable("id") int id) {
-//        Result result = new Result();
-//        PayedCard payedCard = payService.getPayCardById(id);
-//        if (payedCard == null) {
-//            result.setCode(1);
-//            result.setMsg("查询的id不存在");
-//        } else {
-//            result.setMsg("success");
-//            result.setCode(0);
-//            result.setData(payedCard);
-//        }
-//        return result;
-
-        return Result.ok();
+        Result result = new Result();
+        PayedCard payedCard = payService.getPayedCardById(id);
+        if (payedCard == null) {
+            result.setCode(1);
+            result.setMsg("查询 id 的预付卡不存在");
+        } else {
+            Result.ok();
+            result.setData(payedCard);
+        }
+        return result;
     }
 
     @GetMapping("/pay/listAll")
     public Result getAll() {
-//        List<PayedCard> payedCards = payService.getAll();
-
-//        Result result = Result.ok();
-//        result.setData(payedCards);
-//        return result;
-        return Result.ok();
-    }
-
-    @GetMapping("/pay/status/{payedStatus}")
-    public Result getByPayedStatus(@PathVariable("payedStatus") int payedStatus) {
-
-//        List<PayedCard> payedCards = payService.getPayedByStatus(payStatus);
-//        Result result = Result.ok();
-//        result.setData(payedCards);
-//
-//        return result;
-        return Result.ok();
+        Result result = new Result();
+        List<PayedCard> payedCards = payService.getAll();
+        if (payedCards == null) {
+            result.setCode(1);
+            result.setMsg("查询 id 的预付卡不存在");
+        } else {
+            Result.ok();
+            result.setData(payedCards);
+        }
+        return result;
     }
 
     // 获取用户购买的预付卡
     @GetMapping("/pay/user/{userId}")
     public Result getByUserPayed(@PathVariable("userId") int userId) {
 
-//        List<PayedCard> payedCards = payService.getPayedByUserId(userId);
-//        Result result = Result.ok();
-//        result.setData(payedCards);
-
         return Result.ok();
     }
 
-    // 获取商户售出的预付卡
-    @GetMapping("/pay/merchant/{merchantId}")
-    public Result getByMerchantIdPayed(@PathVariable("merchantId") int merchantId) {
-
-//        List<PayedCard> payedCards = payService.getPayedByMerchantId(merchantId);
-//        Result result = Result.ok();
-//        result.setData(payedCards);
-
-        return Result.ok();
+    // 获取对应钱包 id 的预付卡
+    @GetMapping("/pay/wallet/{walletId}")
+    public Result getPayedCardByWalletId(@PathVariable("walletId") int walletId) {
+        Result result = new Result();
+        PayedCard payedCard = payService.getPayedCardByWalletId(walletId);
+        if (payedCard == null) {
+            result.setCode(1);
+            result.setMsg("查询钱包 id 的预付卡不存在");
+        } else {
+            Result.ok();
+            result.setData(payedCard);
+        }
+        return result;
     }
 }

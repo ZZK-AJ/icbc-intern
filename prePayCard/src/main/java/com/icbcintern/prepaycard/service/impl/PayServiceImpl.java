@@ -7,6 +7,8 @@ import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PayServiceImpl implements PayService {
 
@@ -53,6 +55,37 @@ public class PayServiceImpl implements PayService {
             throw new RuntimeException("插入信息失败,插入行数有误");
         }
     }
+
+    @Override
+    public Boolean updatePayCardById(PayedCard payedCard) {
+        int effectNum = payedCardMapper.updatePayCardById(payedCard);
+        return effectNum > 0;
+    }
+
+    @Override
+    public List<PayedCard> getAll() {
+        return payedCardMapper.getAll();
+    }
+
+    public PayedCard getPayedCardByCardId(Integer cardId) {
+        return payedCardMapper.getPayedCardByCardId(cardId);
+    }
+
+    @Override
+    public PayedCard getPayedCardById(Integer id) {
+        return payedCardMapper.getPayedCardById(id);
+    }
+
+    @Override
+    public PayedCard getPayedCardByInstanceId(Integer instanceId) {
+        return payedCardMapper.getPayedCardByInstanceId(instanceId);
+    }
+
+    @Override
+    public PayedCard getPayedCardByWalletId(Integer walletId) {
+        return payedCardMapper.getPayedCardByWalletId(walletId);
+    }
+
 }
 
 
