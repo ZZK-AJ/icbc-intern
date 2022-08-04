@@ -35,11 +35,11 @@ public class ContractService {
         return contractDao.getValidContract();
     }
 
-    public boolean destroyInstance(Integer contractInstanceId){
+    public boolean destroyInstance(Integer contractInstanceId) {
         ContractInstance contractInstance = contractDao.getContractInstanceById(contractInstanceId);
         contractInstance.setState(1);
         int effectNum = contractDao.updateContractInstance(contractInstance);
-        return effectNum>0;
+        return effectNum > 0;
     }
 
     public int deploy(Contract contract) {
@@ -47,16 +47,16 @@ public class ContractService {
         return contract.getContractId();
     }
 
-    public boolean destroy(Integer contractId){
+    public boolean destroy(Integer contractId) {
         Contract contract = contractDao.getContractById(contractId);
-        if (contract==null)return false;
+        if (contract == null) return false;
         contract.setState(1);
         int effectNum = contractDao.updateContract(contract);
-        return effectNum>0;
+        return effectNum > 0;
     }
 
     /**
-     * 若返回值小于0，则代表生成失败 -1：钱包不存在 -2：钱包非空 -3：合约已被销毁
+     * 若返回值小于0，则代表生成失败 -1:钱包不存在 -2:钱包非空 -3:合约已被销毁 -4:payedCardId不存在 -5:对应Card数据不存在
      * @param payedCardId 预付卡购买表中的id
      * @param contractId 合约id
      * @return 生成的合约实例id
@@ -65,7 +65,7 @@ public class ContractService {
     public int signContract(int payedCardId, int contractId) throws Exception {
         Contract contract = contractDao.getContractById(contractId);
         int state = contract.getState();
-        if (state==1){
+        if (state == 1) {
             return -3;
         }
         String path = contract.getPath();
@@ -74,7 +74,7 @@ public class ContractService {
         //TODO 加密或校验合约内容
         Instance instance = InstanceUtils.getWasmInstance(wasmPaths);
         Object[] results = instance.exports.
-                getFunction("sign_contract").apply(contractId,payedCardId);
+                getFunction("sign_contract").apply(contractId, payedCardId);
         Integer instanceId = (Integer) results[0];
         return instanceId;
     }
@@ -84,18 +84,19 @@ public class ContractService {
      * @param contractInstanceId 合约实例id
      * @param money 付款金额
      * @return 执行结果
+     * @Exception 数据解析异常
      */
-    public Result transfer(int contractInstanceId,long money) throws Exception {
+    public Result transfer(int contractInstanceId, long money) throws Exception {
         Instance instance = null;
         try {
             instance = getWasmInstanceByContractInstanceId(contractInstanceId);
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(1,e.getMessage(),null);
+            return new Result(1, e.getMessage(), null);
         }
         StringUtils stringUtils = new StringUtils(instance);
         Object[] results = instance.exports.
-                getFunction("transfer").apply(contractInstanceId,money);
+                getFunction("transfer").apply(contractInstanceId, money);
         Integer ptr = (Integer) results[0];
         String json = stringUtils.getString(ptr);
         return parseJson(json);
@@ -104,15 +105,15 @@ public class ContractService {
     /**
      *
      * @param contractInstanceId 合约实例id
-     * @return 执行结果
-     * @throws Exception 异常
+     * @return 执行结果 code=0:执行成功 code=-1:执行失败
+     * @throws Exception 数据解析异常
      */
     public Result refund(int contractInstanceId) throws Exception {
         Instance instance = null;
         try {
             instance = getWasmInstanceByContractInstanceId(contractInstanceId);
         } catch (Exception e) {
-            return new Result(1,e.toString(),null);
+            return new Result(1, e.toString(), null);
         }
         StringUtils stringUtils = new StringUtils(instance);
         Object[] results = instance.exports.
@@ -126,15 +127,15 @@ public class ContractService {
     //根据contractInstanceId获取wasmInstance
     private Instance getWasmInstanceByContractInstanceId(int contractInstanceId) throws Exception {
         ContractInstance contractInstance = contractDao.getContractInstanceById(contractInstanceId);
-        if (contractInstance==null) {
+        if (contractInstance == null) {
             throw new Exception("合约实例不存在");
         }
         Contract contract = contractDao.getContractById(contractInstance.getContractId());
-        if (contract==null) {
+        if (contract == null) {
             throw new Exception("合约不存在");
         }
         int state = contract.getState();
-        if (state==1){
+        if (state == 1) {
             throw new Exception("合约已销毁");
         }
         String path = contract.getPath();
@@ -148,9 +149,10 @@ public class ContractService {
         ObjectMapper jackson = new ObjectMapper();
 
         HashMap map = jackson.readValue(json, HashMap.class);
-        Result result = new Result((Integer) map.get("code"), (String) map.get("message"),map.get("data"));
-//        System.out.println(json);
-//        System.out.println(result);
+        Result result = new Result((Integer) map.get("code"), (String) map.get("message"), map.get("data"));
+        if (result.getCode()==0&& !((boolean) map.get("success"))){
+            result.setData(-1);
+        }
         return result;
     }
 
