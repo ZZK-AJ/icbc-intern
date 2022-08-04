@@ -1,8 +1,6 @@
 package com.icbcintern.prepaycard.mapper;
 
-import com.icbcintern.prepaycard.pojo.Card;
 import com.icbcintern.prepaycard.pojo.PayedCard;
-import com.icbcintern.prepaycard.pojo.Review;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -35,7 +33,7 @@ public interface PayedCardMapper {
     List<PayedCard> getAll();
 
     @Select("select * from payedCard where card_id=#{cardId}")
-    PayedCard getPayedCardByCardId(Integer cardId);
+    List<PayedCard> getPayedCardByCardId(Integer cardId);
 
     @Select("select * from payedCard where id=#{id}")
     PayedCard getPayedCardById(Integer id);

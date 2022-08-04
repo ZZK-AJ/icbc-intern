@@ -18,7 +18,7 @@ public interface PayService {
 
     PayedCard getPayedCardById(Integer id);
 
-    PayedCard getPayedCardByCardId(Integer cardId);
+    List<PayedCard> getPayedCardByCardId(Integer cardId);
 
     PayedCard getPayedCardByInstanceId(Integer instanceId);
 

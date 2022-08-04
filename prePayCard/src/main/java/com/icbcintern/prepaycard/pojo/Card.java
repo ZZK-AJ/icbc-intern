@@ -15,7 +15,7 @@ public class Card {
     private Integer id;     // 卡种类id
     private Integer reviewId;
     private Integer merchantId;  // 商户id
-    private Integer walletId;   // 商户钱包id
+    private String walletId;   // 商户钱包id
     private String cardName;
     private String cardType;  // 预付卡类型
     private String cardInfo;

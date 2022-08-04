@@ -67,7 +67,7 @@ public class PayServiceImpl implements PayService {
         return payedCardMapper.getAll();
     }
 
-    public PayedCard getPayedCardByCardId(Integer cardId) {
+    public List<PayedCard> getPayedCardByCardId(Integer cardId) {
         return payedCardMapper.getPayedCardByCardId(cardId);
     }
 

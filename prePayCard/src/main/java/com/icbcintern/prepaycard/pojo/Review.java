@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Review {
     private Integer id;
     private Integer merchantId;
-    private Integer walletId;
+    private String walletId;
     private String cardName;
     private String cardType;
     private String cardInfo;
