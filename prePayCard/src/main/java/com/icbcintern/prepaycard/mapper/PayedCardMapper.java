@@ -1,6 +1,7 @@
 package com.icbcintern.prepaycard.mapper;
 
 import com.icbcintern.prepaycard.pojo.PayedCard;
+import com.icbcintern.prepaycard.pojo.UserCard;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -44,5 +45,15 @@ public interface PayedCardMapper {
     @Select("select * from payedCard where wallet_id=#{walletId}")
     PayedCard getPayedCardByWalletId(Integer walletId);
 
+    @Select("select * from userCard where user_id=#{userId}")
+    List<UserCard> getUserCardByUserId(Integer userId);
 
+    @Select("select * from userCard where card_id=#{payedCardId}")
+    UserCard getUserCardByPayedCardId(Integer payedCardId);
+
+    /**
+     * 商户查看对应 merchant_id 和卡状态的记录
+     */
+    @Select("select * from payedCard where merchant_id=#{merchantId} AND card_status=#{cardStatus}")
+    List<PayedCard> getPayedCardBymMerchantCardStatus(Integer merchantId, String cardStatus);
 }

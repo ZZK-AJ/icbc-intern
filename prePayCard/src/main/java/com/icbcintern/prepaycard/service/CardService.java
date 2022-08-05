@@ -12,6 +12,12 @@ public interface CardService {
 
     List<Card> getAll();
 
+    /**
+     * 查询预付卡类型信息表，返回预付卡类型信息
+     *
+     * @param id 预付卡 id
+     * @return 卡类型信息
+     */
     Card getCardById(Integer id);
 
     List<Card> getCardByMerchantId(Integer merchantId);

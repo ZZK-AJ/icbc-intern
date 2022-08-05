@@ -2,6 +2,7 @@ package com.icbcintern.prepaycard.service.impl;
 
 import com.icbcintern.prepaycard.mapper.PayedCardMapper;
 import com.icbcintern.prepaycard.pojo.PayedCard;
+import com.icbcintern.prepaycard.pojo.UserCard;
 import com.icbcintern.prepaycard.service.PayService;
 import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,27 @@ public class PayServiceImpl implements PayService {
     @Override
     public PayedCard getPayedCardByWalletId(Integer walletId) {
         return payedCardMapper.getPayedCardByWalletId(walletId);
+    }
+
+    /**
+     * 获取用户购买的预付卡id
+     *
+     * @param userId 用户id
+     * @return 用户购买的预付卡关系
+     */
+    @Override
+    public List<UserCard> getUserCardByUserId(Integer userId) {
+        return payedCardMapper.getUserCardByUserId(userId);
+    }
+
+    @Override
+    public UserCard getUserCardByPayedCardId(Integer payedCardId) {
+        return payedCardMapper.getUserCardByPayedCardId(payedCardId);
+    }
+
+    @Override
+    public List<PayedCard> getPayedCardBymMerchantCardStatus(Integer merchantId, String cardStatus) {
+        return payedCardMapper.getPayedCardBymMerchantCardStatus(merchantId, cardStatus);
     }
 
 }

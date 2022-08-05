@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PayedCard {
-    private Integer id; // 用户购买后生成的预付卡id，关联消费者 预付卡用户关系表，关联商户，预付卡商户关系表
+    private Integer id; // 用户购买后生成的预付卡id，关联消费者 预付卡用户关系表，关联商户 预付卡商户关系表
     private Integer merchantId; // 商户 id
     private Integer cardId; // 卡种类id，对应 Card 表的 id
     private String walletId; // 冻结的运营方钱包 id

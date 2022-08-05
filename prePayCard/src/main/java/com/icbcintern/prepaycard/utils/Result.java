@@ -12,7 +12,11 @@ public class Result {
     private String msg;
     private Object data;
 
-    public static Result ok(){
-        return new Result(0,"success",null);
+    public static Result ok() {
+        return new Result(0, "success", null);
+    }
+
+    public static Result unOk() {
+        return new Result(1, null, null);
     }
 }

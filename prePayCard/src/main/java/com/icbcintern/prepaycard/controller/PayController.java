@@ -146,4 +146,25 @@ public class PayController {
         }
         return result;
     }
+
+    /**
+     * 用户获取购买的预付卡信息
+     *
+     * @param userId 用户id
+     * @return Result
+     */
+    @GetMapping("/payCard/user/{userId}")
+    public Result getUserCardByUserId(@PathVariable("userId") int userId) {
+        Result result = new Result();
+        List<UserCard> userCards = payService.getUserCardByUserId(userId);
+        if (userCards == null) {
+            result.setCode(1);
+            result.setMsg("查询用户未购买预付卡");
+        } else {
+            Result.ok();
+            result.setData(userCards);
+        }
+        return result;
+    }
+
 }

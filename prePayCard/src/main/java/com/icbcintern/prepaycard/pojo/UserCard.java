@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Consume {
+public class UserCard {
     private Integer id;
-    private Integer payedCardId;
-    private Integer payedAmount;
-    private Timestamp payedTime;
+    private Integer userId;
+    private Integer cardId;
+    private String userWalletId;
 
 }
