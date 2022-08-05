@@ -22,7 +22,7 @@ public class WasmInstanceTests {
     @Test
     void wasmInstance() throws Exception {
         System.out.println(new File("E:/project/icbc-intern/prePayCard/src/main/resources/lib.wasm").toURI());
-        String wasmPaths = Test.class.getClassLoader().getResource("lib.wasm").toURI().toString();
+        String wasmPaths = Test.class.getClassLoader().getResource("contract.wasm").toURI().toString();
         Instance instance = InstanceUtils.getWasmInstance(wasmPaths);
         {
             long start = System.currentTimeMillis();

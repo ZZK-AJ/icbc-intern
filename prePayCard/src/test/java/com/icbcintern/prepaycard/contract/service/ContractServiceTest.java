@@ -30,7 +30,7 @@ class ContractServiceTest {
     void signContract() {
         int res = 0;
         try {
-            res = contractService.signContract(0, 4);
+            res = contractService.signContract(1, 1);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,7 +47,7 @@ class ContractServiceTest {
     @Test
     void transfer() {
         try {
-            System.out.println(contractService.transfer(8, 100));
+            System.out.println(contractService.transfer(11, 100));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -56,7 +56,7 @@ class ContractServiceTest {
     @Test
     void refund() {
         try {
-            System.out.println(contractService.refund(10));
+            System.out.println(contractService.refund(11));
         } catch (Exception e) {
             e.printStackTrace();
         }

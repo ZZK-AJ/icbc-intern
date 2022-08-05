@@ -1,7 +1,6 @@
 package com.icbcintern.prepaycard.mapper;
 
 
-import com.icbcintern.prepaycard.pojo.User;
 import com.icbcintern.prepaycard.pojo.Wallet;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,7 +35,7 @@ public interface WalletMapper {
     @Update("update wallet set wallet_id=#{walletId},balance=#{balance},type=#{type} where id=#{id}")
     int updateWalletById(Wallet wallet);
 
-    @Update("update wallet set id=#{id},balance=#{balance},type=#{type} where wallet_id=#{walletId}")
+    @Update("update wallet set balance=#{balance},type=#{type} where wallet_id=#{walletId}")
     int updateWalletByWalletId(Wallet wallet);
 
 }
