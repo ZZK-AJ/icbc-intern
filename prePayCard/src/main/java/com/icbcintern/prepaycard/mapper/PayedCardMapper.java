@@ -14,10 +14,10 @@ public interface PayedCardMapper {
         //新增时将主键返回
     int insertPayCard(PayedCard payedCard);
 
-    @Insert("insert into userCard(user_id,card_id, user_wallet_id) values (#{userId},#{cardId}),#{userWalletId}")
+    @Insert("insert into userCard(user_id,card_id, user_wallet_id) values (#{userId},#{payCardId},#{userWalletId})")
     int insertUserPayedCard(int userId, int payCardId, String userWalletId);
 
-    @Insert("insert into merchantCard(merchant_id,card_id) values (#{merchantId},#{cardId})")
+    @Insert("insert into merchantCard(merchant_id,card_id) values (#{merchantId},#{payCardId})")
     int insertMerchantPayedCard(int merchantId, int payCardId);
 
     @Update("update payedCard set " +
@@ -26,7 +26,7 @@ public interface PayedCardMapper {
             "card_id=#{cardId}," +
             "wallet_id=#{walletId}," +
             "card_status=#{cardStatus}," +
-            "instance_id=#{instanceId}," +
+            "instance_id=#{instanceId} " +
             "where id=#{id}")
     Integer updatePayCardById(PayedCard payedCard);
 
