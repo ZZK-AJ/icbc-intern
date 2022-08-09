@@ -33,7 +33,6 @@ public class PayController {
 
     /**
      * 用户购买预付卡
-     *
      * @param token      token 验证信息
      * @param cardTypeId 预付卡类型 id
      * @return Result
@@ -60,7 +59,7 @@ public class PayController {
         if (res) {
             Result.ok();
         } else {
-            result.setCode(1);
+            Result.unOk();
             result.setMsg("未成功添加运营方钱包");
             return result;
         }
@@ -71,27 +70,29 @@ public class PayController {
         payCard.setMerchantId(cardType.getMerchantId());
         payCard.setWalletId(walletId);
 
-        // 调用智能合约进行签约
+        String userWalletId = userService.getWalletIdByUserId(user.getId());  // 获取 用户钱包关系表 用户钱包id
+        payService.insertUserPayedCard(user.getId(), payCard.getId(), userWalletId);  // 写入用户预付卡关系表
+        payService.insertMerchantPayedCard(payCard.getMerchantId(), payCard.getId());  // 写入商户预付卡关系表
+
+        // 购卡之后直接扣用户钱包的钱
+        Wallet userWallet = walletService.getWalletByWalletId(userWalletId);
+        long setUserBalance = userWallet.getBalance() - cardType.getCardAmount();
+        userWallet.setBalance(setUserBalance);
+        Boolean aBoolean = walletService.updateWalletByWalletId(userWallet);
+        if (aBoolean) {
+            Result.ok();
+        } else {
+            Result.unOk();
+            result.setMsg("未成功从用户钱包扣款");
+            return result;
+        }
+
+        // 调用智能合约进行签约 签约之后会有转账到运营方钱包的操作
         payCard.setInstanceId(0);  // 默认先置为 0，签约后返回实际 instance_id
         payService.insertPayCard(payCard);  // 用户购买预付卡之后，写入预付卡表
-
         int instanceId = contractService.signContract(payCard.getId(), 1);
         payCard.setInstanceId(instanceId);
         payService.updatePayCardById(payCard); // 用户购买预付卡之后，写入预付卡表
-
-        // 通过 用户id 查 用户钱包关系表 用户钱包id
-        String userWalletId = userService.getWalletIdByUserId(user.getId());
-        // 写入用户预付卡关系表
-        payService.insertUserPayedCard(user.getId(), payCard.getId(), userWalletId);
-        // 写入商户预付卡关系表
-        payService.insertMerchantPayedCard(payCard.getMerchantId(), payCard.getId());
-
-        // 从用户钱包 转账到 运营方的冻结钱包
-        Wallet operatorWallet = walletService.getWalletByWalletId(walletId);
-
-        Wallet userWallet = walletService.getWalletByWalletId(userWalletId);
-        long transferMoney = cardType.getCardAmount() + cardType.getGiftAmount();
-        walletService.transfer(userWallet, operatorWallet, transferMoney);  // 购卡之后转账到冻结账户
 
         return result;
     }

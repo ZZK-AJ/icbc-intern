@@ -74,23 +74,14 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public boolean updateMerchantById(Merchant merchant) {
         if (merchant.getId() != null) {
-            try {
-                int effectNum = merchantMapper.updateMerchantById(merchant);
-                if (effectNum > 0) {
-                    //如果影响行数大于0，更新成功
-                    System.out.println("更新成功，主键为：" + merchant.getId());
-                    return true;
-                } else {
-                    throw new RuntimeException("更新信息失败,插入行数有误");
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("更新信息失败了:" + e.getMessage());
+            int effectNum = merchantMapper.updateMerchantById(merchant);
+            if (effectNum > 0) {
+                return true;
+            } else {
+                return false;
             }
-
-        } else {
-            throw new RuntimeException("信息不能为空！！！！");
         }
-
+        return false;
     }
 
     /**

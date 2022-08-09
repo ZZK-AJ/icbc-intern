@@ -111,16 +111,16 @@ public class MerchantController {
     public Result updateUserById(@RequestBody Map<String, String> merchantMap) {
         Result result = new Result();
         Merchant merchant = new Merchant();
-        // todo 根据对应商户的 id 赋值
         merchant.setId(Integer.valueOf(merchantMap.get("id")));
         merchant.setName(merchantMap.get("merchantName"));
         merchant.setLoginPasswd(merchantMap.get("loginPasswd"));
         merchant.setMerchantInfo(merchantMap.get("merchantInfo"));
         boolean r = merchantService.updateMerchantById(merchant);
         if (r) {
+            Result.ok();
             result.setMsg("商户更新成功");
         } else {
-            result.setCode(1);
+            Result.unOk();
             result.setMsg("商户更新失败");
         }
         return result;

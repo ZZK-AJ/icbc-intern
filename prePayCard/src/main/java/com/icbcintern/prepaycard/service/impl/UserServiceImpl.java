@@ -73,23 +73,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateUserById(User user) {
         if (user.getId() != null) {
-            try {
                 int effectNum = userMapper.updateUserById(user);
                 if (effectNum > 0) {
                     //如果影响行数大于0，更新成功
-                    System.out.println("更新成功，主键为：" + user.getId());
                     return true;
                 } else {
-                    throw new RuntimeException("更新信息失败,插入行数有误");
+                    return false;
                 }
-            } catch (Exception e) {
-                throw new RuntimeException("更新信息失败了:" + e.getMessage());
             }
-
-        } else {
-            throw new RuntimeException("信息不能为空！！！！");
-        }
-
+        return false;
     }
 
     /**

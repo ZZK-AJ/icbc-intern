@@ -26,4 +26,5 @@ mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
   mapper-locations: classpath:mybatis/mapper/*.xml
 
-
+contract:
+  dir: /Users/zzk/Documents/GitHub/icbc-intern/prePayCard/src/main/resources

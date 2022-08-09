@@ -21,40 +21,21 @@ public class PayServiceImpl implements PayService {
      * @return Result
      */
     @Override
-    public Result insertPayCard(PayedCard payedCard) {
+    public Boolean insertPayCard(PayedCard payedCard) {
         int effectNum = payedCardMapper.insertPayCard(payedCard);
-        if (effectNum > 0) {
-            // 如果影响行数大于0，那么就是增加成功
-            return Result.ok();
-        } else {
-            throw new RuntimeException("插入信息失败,插入行数有误");
-        }
+        return effectNum > 0;
     }
 
     @Override
-    public Result insertUserPayedCard(int userId, int payCardId, String userWalletId) {
+    public Boolean insertUserPayedCard(int userId, int payCardId, String userWalletId) {
         int effectNum = payedCardMapper.insertUserPayedCard(userId, payCardId, userWalletId);
-        if (effectNum > 0) {
-            // 如果影响行数大于0，那么就是增加成功
-            return Result.ok();
-        } else {
-            throw new RuntimeException("插入信息失败,插入行数有误");
-        }
+        return effectNum > 0;
     }
 
     @Override
-    public Result insertMerchantPayedCard(int merchantId, int payCardId) {
-        System.out.println("insertMerchantPayedCard ...");
-        System.out.println(merchantId);
-        System.out.println(payCardId);
-
+    public Boolean insertMerchantPayedCard(int merchantId, int payCardId) {
         int effectNum = payedCardMapper.insertMerchantPayedCard(merchantId, payCardId);
-        if (effectNum > 0) {
-            // 如果影响行数大于0，那么就是增加成功
-            return Result.ok();
-        } else {
-            throw new RuntimeException("插入信息失败,插入行数有误");
-        }
+        return effectNum > 0;
     }
 
     @Override

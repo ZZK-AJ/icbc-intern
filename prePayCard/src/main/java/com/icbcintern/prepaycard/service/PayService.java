@@ -7,11 +7,11 @@ import com.icbcintern.prepaycard.utils.Result;
 import java.util.List;
 
 public interface PayService {
-    Result insertPayCard(PayedCard PayedCard);
+    Boolean insertPayCard(PayedCard PayedCard);
 
-    Result insertMerchantPayedCard(int merchantId, int payCardId);
+    Boolean insertUserPayedCard(int userId, int payCardId, String userWalletId);
 
-    Result insertUserPayedCard(int userId, int payCardId, String userWalletId);
+    Boolean insertMerchantPayedCard(int merchantId, int payCardId);
 
     Boolean updatePayCardById(PayedCard payedCard);
 

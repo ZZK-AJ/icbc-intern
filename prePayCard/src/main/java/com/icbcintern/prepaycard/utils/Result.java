@@ -17,6 +17,6 @@ public class Result {
     }
 
     public static Result unOk() {
-        return new Result(1, null, null);
+        return new Result(1, "fail", null);
     }
 }

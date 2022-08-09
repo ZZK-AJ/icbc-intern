@@ -119,10 +119,11 @@ public class UserController {
         user.setLoginPasswd(userMap.get("loginPasswd"));
         user.setPayPasswd(userMap.get("payPasswd"));
         boolean r= userService.updateUserById(user);
-        if (r){
+        if (r) {
+            Result.ok();
             result.setMsg("用户更新成功");
-        }else {
-            result.setCode(1);
+        } else {
+            Result.unOk();
             result.setMsg("用户更新失败");
         }
         return result;
