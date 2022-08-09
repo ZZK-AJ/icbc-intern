@@ -75,8 +75,8 @@ public class MerchantController {
     /**
      * 按 id 查找 merchant
      */
-    @GetMapping("/userInfoById/{id}")
-    public Result getUserInfoById(@PathVariable("id") int id) {
+    @GetMapping("/merchantInfoById/{id}")
+    public Result getMerchantInfoById(@PathVariable("id") int id) {
         Result result = new Result();
         Merchant merchant = merchantService.getMerchantById(id);
         if (merchant != null) {
@@ -108,7 +108,7 @@ public class MerchantController {
      * 更新 merchant
      */
     @PostMapping("/updateMerchantById")
-    public Result updateUserById(@RequestBody Map<String, String> merchantMap) {
+    public Result updateMerchantById(@RequestBody Map<String, String> merchantMap) {
         Result result = new Result();
         Merchant merchant = new Merchant();
         merchant.setId(Integer.valueOf(merchantMap.get("id")));
@@ -117,20 +117,19 @@ public class MerchantController {
         merchant.setMerchantInfo(merchantMap.get("merchantInfo"));
         boolean r = merchantService.updateMerchantById(merchant);
         if (r) {
-            Result.ok();
-            result.setMsg("商户更新成功");
+            return Result.setSuccessMsg("商户更新成功", null);
         } else {
             Result.unOk();
             result.setMsg("商户更新失败");
+            return Result.setFailMsg("商户更新失败", null);
         }
-        return result;
     }
 
     /**
      * 删除
      */
     @DeleteMapping("/deleteMerchantById/{id}")
-    public Result deleteUserById(@PathVariable("id") int id) {
+    public Result deleteMerchantById(@PathVariable("id") int id) {
         Result result = new Result();
         boolean r = merchantService.deleteMerchantById(id);
         if (r) {
@@ -143,10 +142,10 @@ public class MerchantController {
     }
 
     /**
-     * 用户登录，userName and id 唯一
+     * 商户登录
      */
     @PostMapping("/merchantLogin")
-    public Result userLogin(@RequestBody Map<String, String> merchantMap) {
+    public Result merchantLogin(@RequestBody Map<String, String> merchantMap) {
         Result result = new Result();
         Merchant existMerchant = merchantService.getMerchantByName(merchantMap.get("merchantName"));
         if (existMerchant == null) {

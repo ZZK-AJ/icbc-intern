@@ -19,4 +19,13 @@ public class Result {
     public static Result unOk() {
         return new Result(1, "fail", null);
     }
+
+    public static Result setSuccessMsg(String msg, Object data) {
+        return new Result(0, msg, data);
+    }
+
+    public static Result setFailMsg(String msg, Object data) {
+
+        return new Result(1, msg, data);
+    }
 }

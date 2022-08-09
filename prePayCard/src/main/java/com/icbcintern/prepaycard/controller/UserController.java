@@ -30,17 +30,14 @@ public class UserController {
         Result result = new Result();
 
         if (userMap.get("userName").isEmpty() || userMap.get("loginPasswd").isEmpty() || userMap.get("payPasswd").isEmpty()) {
-            result.setMsg("用户名和密码不能为空");
-            return result;
+            return Result.setFailMsg("用户名和密码不能为空", null);
         }
 
         // 查询是否有重复的用户名
         User existUser = userService.getUserByUserName(userMap.get("userName"));
         if (existUser != null) {
-            result.setMsg("该用户名已存在");
-            return result;
+            return Result.setFailMsg("该用户名已存在", null);
         }
-
         user.setName(userMap.get("userName"));
         user.setLoginPasswd(userMap.get("loginPasswd"));
         user.setPayPasswd(userMap.get("payPasswd"));
@@ -57,21 +54,18 @@ public class UserController {
                 User registeredUser = userService.getUserByUserName(user.getName());
                 boolean b = userService.insertUserWallet(wallet.getWalletId(), registeredUser.getId());
                 if (b) {
-                    result.setMsg("用户注册成功，添加钱包及关系表成功");
-                    return result;
+                    return Result.setSuccessMsg("用户注册成功，添加钱包及关系表成功", null);
                 } else {
-                    result.setCode(1);
-                    result.setMsg("用户注册失败,未成功添加用户钱包关系表");
+                    return Result.setFailMsg("用户注册失败,未成功添加用户钱包关系表", null);
                 }
             } else {
                 result.setCode(1);
                 result.setMsg("用户注册失败,未成功添加钱包");
+                return Result.setFailMsg("用户注册失败,未成功添加钱包", null);
             }
         }else {
-            result.setCode(1);
-            result.setMsg("用户注册失败");
+            return Result.setFailMsg("用户注册失败", null);
         }
-        return result;
     }
 
     /**
@@ -111,7 +105,6 @@ public class UserController {
      */
     @PostMapping("/updateUserById")
     public Result updateUserById(@RequestBody Map<String,String> userMap){
-        Result result = new Result();
         User user = new User();
         // todo 根据对应用户的 id 赋值
         user.setId(Integer.valueOf(userMap.get("id")));
@@ -120,13 +113,10 @@ public class UserController {
         user.setPayPasswd(userMap.get("payPasswd"));
         boolean r= userService.updateUserById(user);
         if (r) {
-            Result.ok();
-            result.setMsg("用户更新成功");
+            return Result.setSuccessMsg("用户更新成功", null);
         } else {
-            Result.unOk();
-            result.setMsg("用户更新失败");
+            return Result.setFailMsg("用户更新失败", null);
         }
-        return result;
     }
 
     /**

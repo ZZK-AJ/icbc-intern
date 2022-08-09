@@ -52,7 +52,7 @@ public class MerchantServiceImpl implements MerchantService {
 
 
     /**
-     * 按 userName 查找 merchant
+     * 按 merchantName 查找 merchant
      */
     @Override
     public Merchant getMerchantByName(String merchantName) {
