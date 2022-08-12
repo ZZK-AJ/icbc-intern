@@ -4,7 +4,6 @@ import com.icbcintern.prepaycard.mapper.PayedCardMapper;
 import com.icbcintern.prepaycard.pojo.PayedCard;
 import com.icbcintern.prepaycard.pojo.UserCard;
 import com.icbcintern.prepaycard.service.PayService;
-import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,6 +88,10 @@ public class PayServiceImpl implements PayService {
         return payedCardMapper.getPayedCardBymMerchantCardStatus(merchantId, cardStatus);
     }
 
+    @Override
+    public List<PayedCard> getPayedCardByUserId(Integer userId) {
+        return payedCardMapper.getPayedCardByUserId(userId);
+    }
 }
 
 

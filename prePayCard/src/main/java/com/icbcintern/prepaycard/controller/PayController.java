@@ -1,6 +1,5 @@
 package com.icbcintern.prepaycard.controller;
 
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.icbcintern.prepaycard.contract.service.ContractService;
 import com.icbcintern.prepaycard.pojo.*;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -151,7 +149,7 @@ public class PayController {
      * @param userId 用户id
      * @return Result
      */
-    @GetMapping("/payCard/user/{userId}")
+    @GetMapping("/userCard/user/{userId}")
     public Result getUserCardByUserId(@PathVariable("userId") int userId) {
         Result result = new Result();
         List<UserCard> userCards = payService.getUserCardByUserId(userId);
@@ -163,6 +161,24 @@ public class PayController {
             result.setData(userCards);
         }
         return result;
+    }
+
+    @GetMapping("/payCard/user/{userId}")
+    public Result getPayedCardByUserId(@PathVariable("userId") int userId) {
+        Result result = new Result();
+        List<PayedCard> cards = payService.getPayedCardByUserId(userId);
+        if (cards == null) {
+            result.setCode(1);
+            result.setMsg("查询用户未购买预付卡");
+        } else {
+            Result.ok();
+            result.setData(cards);
+        }
+        return result;
+    }
+
+    {
+
     }
 
 }

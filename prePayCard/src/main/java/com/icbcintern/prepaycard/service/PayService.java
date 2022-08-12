@@ -2,7 +2,6 @@ package com.icbcintern.prepaycard.service;
 
 import com.icbcintern.prepaycard.pojo.PayedCard;
 import com.icbcintern.prepaycard.pojo.UserCard;
-import com.icbcintern.prepaycard.utils.Result;
 
 import java.util.List;
 
@@ -49,4 +48,6 @@ public interface PayService {
      * @return 已购预付卡的信息
      */
     List<PayedCard> getPayedCardBymMerchantCardStatus(Integer merchantId, String cardStatus);
+
+    List<PayedCard> getPayedCardByUserId(Integer userId);
 }

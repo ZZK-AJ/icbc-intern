@@ -151,7 +151,7 @@ public class ContractService {
         HashMap map = jackson.readValue(json, HashMap.class);
         Result result = new Result((Integer) map.get("code"), (String) map.get("message"), map.get("data"));
         if (result.getCode()==0&& !((boolean) map.get("success"))){
-            result.setData(-1);
+            result.setCode(-1);
         }
         return result;
     }

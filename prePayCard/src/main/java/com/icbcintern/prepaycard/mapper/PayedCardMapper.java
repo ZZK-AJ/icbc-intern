@@ -56,4 +56,7 @@ public interface PayedCardMapper {
      */
     @Select("select * from payedCard where merchant_id=#{merchantId} AND card_status=#{cardStatus}")
     List<PayedCard> getPayedCardBymMerchantCardStatus(Integer merchantId, String cardStatus);
+
+    @Select("select * from payedCard where id in (select card_id from userCard where user_id=#{userId})")
+    List<PayedCard> getPayedCardByUserId(Integer userId);
 }

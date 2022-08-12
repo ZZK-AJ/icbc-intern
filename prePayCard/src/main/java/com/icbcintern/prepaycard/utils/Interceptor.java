@@ -1,6 +1,5 @@
 package com.icbcintern.prepaycard.utils;
 
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -8,7 +7,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 public class Interceptor implements HandlerInterceptor {
     /**
@@ -24,12 +22,14 @@ public class Interceptor implements HandlerInterceptor {
 
             if (token == null) {
                 response.getWriter().write("未登录，请登录后获取 token！");
+                response.setStatus(401);
                 return false;
             }
 
 //            Map<String, Claim> userData = JwtTools.verifyToken(token);
             DecodedJWT jwt = JwtTools.verifyToken(token);
             if (jwt == null || StringUtils.isEmpty(jwt.getClaim("userName").asString())) {
+                response.setStatus(401);
                 response.getWriter().write("token 不合法！");
                 return false;
             }
