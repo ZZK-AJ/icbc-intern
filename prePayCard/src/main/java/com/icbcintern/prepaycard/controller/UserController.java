@@ -2,13 +2,14 @@ package com.icbcintern.prepaycard.controller;
 
 import com.icbcintern.prepaycard.pojo.User;
 import com.icbcintern.prepaycard.pojo.Wallet;
-import com.icbcintern.prepaycard.utils.JwtTools;
 import com.icbcintern.prepaycard.service.UserService;
 import com.icbcintern.prepaycard.service.WalletService;
+import com.icbcintern.prepaycard.utils.JwtTools;
 import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -148,10 +149,14 @@ public class UserController {
             return result;
         }
         if (existUser.getLoginPasswd().equals(userMap.get("loginPasswd"))) {
-            result.setMsg("用户登录中");
+            result.setMsg("登录成功");
 //            String token = TokenUtil.genToken(existUser);
             String token = JwtTools.createToken(existUser);
-            result.setData(token);  // 返回 token
+            String userId = String.valueOf(existUser.getId());
+            HashMap<String,String> data = new HashMap<>();
+            data.put("token",token);
+            data.put("userId",userId);
+            result.setData(data);  // 返回 token 和 userId
 
         } else {
             result.setMsg("用户登录失败，查询登录密码是否错误");

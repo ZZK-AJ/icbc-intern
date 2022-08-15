@@ -63,6 +63,13 @@ public class PayController {
         payCard.setMerchantId(cardType.getMerchantId());
         payCard.setWalletId(walletId);
 
+        // 先插入钱包
+        // 调用智能合约进行签约 签约之后会有转账到运营方钱包的操作
+        payCard.setInstanceId(0);  // 默认先置为 0，签约后返回实际 instance_id
+        Boolean insertPayCardResult = payService.insertPayCard(payCard);  // 用户购买预付卡之后，写入预付卡表
+        if (!insertPayCardResult) {
+            return Result.setFailMsg("写入预付卡表失败", null);
+        }
         String userWalletId = userService.getWalletIdByUserId(user.getId());  // 获取 用户钱包关系表 用户钱包id
         payService.insertUserPayedCard(user.getId(), payCard.getId(), userWalletId);  // 写入用户预付卡关系表
         payService.insertMerchantPayedCard(payCard.getMerchantId(), payCard.getId());  // 写入商户预付卡关系表
@@ -76,12 +83,7 @@ public class PayController {
             return Result.setFailMsg("未成功从用户钱包扣款", null);
         }
 
-        // 调用智能合约进行签约 签约之后会有转账到运营方钱包的操作
-        payCard.setInstanceId(0);  // 默认先置为 0，签约后返回实际 instance_id
-        Boolean insertPayCardResult = payService.insertPayCard(payCard);  // 用户购买预付卡之后，写入预付卡表
-        if (!insertPayCardResult) {
-            return Result.setFailMsg("写入预付卡表失败", null);
-        }
+
         int instanceId = contractService.signContract(payCard.getId(), 1);
         payCard.setInstanceId(instanceId);
         Boolean updatePayCardById = payService.updatePayCardById(payCard); // 用户购买预付卡之后，写入预付卡表
