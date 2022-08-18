@@ -11,6 +11,8 @@ import com.icbcintern.prepaycard.utils.JwtTools;
 import com.icbcintern.prepaycard.utils.Result;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,8 +36,10 @@ public class PayController {
      * @param token      token 验证信息
      * @param cardTypeId 预付卡类型 id
      * @return Result
+     * TODO 将代码封装到service层或整个trycatch整个包裹,而不是出现错误手动回滚
      */
     @PostMapping("/pay/payedCard/{id}")
+    @Transactional
     public Result insertPayCard(@RequestHeader("Authorization") String token,
                                 @PathVariable("id") int cardTypeId) throws Exception {
         Result result = new Result();
@@ -54,6 +58,7 @@ public class PayController {
         wallet.setBalance((long) 0); // 初始化默认设为 0
         Boolean res = walletService.insertWallet(wallet);
         if (!res) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.setFailMsg("未成功添加运营方钱包", null);
         }
 
@@ -68,6 +73,7 @@ public class PayController {
         payCard.setInstanceId(0);  // 默认先置为 0，签约后返回实际 instance_id
         Boolean insertPayCardResult = payService.insertPayCard(payCard);  // 用户购买预付卡之后，写入预付卡表
         if (!insertPayCardResult) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.setFailMsg("写入预付卡表失败", null);
         }
         String userWalletId = userService.getWalletIdByUserId(user.getId());  // 获取 用户钱包关系表 用户钱包id
@@ -77,9 +83,16 @@ public class PayController {
         // 购卡之后直接扣用户钱包的钱
         Wallet userWallet = walletService.getWalletByWalletId(userWalletId);
         long setUserBalance = userWallet.getBalance() - cardType.getCardAmount();
+        if (setUserBalance < 0) {
+
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.setFailMsg("用户余额不足", null);
+
+        }
         userWallet.setBalance(setUserBalance);
         Boolean aBoolean = walletService.updateWalletByWalletId(userWallet);
         if (!aBoolean) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.setFailMsg("未成功从用户钱包扣款", null);
         }
 
@@ -88,6 +101,7 @@ public class PayController {
         payCard.setInstanceId(instanceId);
         Boolean updatePayCardById = payService.updatePayCardById(payCard); // 用户购买预付卡之后，写入预付卡表
         if (!updatePayCardById) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.setFailMsg("更新预付卡表失败", null);
         }
 
@@ -179,8 +193,17 @@ public class PayController {
         return result;
     }
 
-    {
-
+    @GetMapping("/payCard/balance/{payCardId}")
+    public Result getBalanceByPayCardId(@PathVariable("payCardId") int payCardId) {
+        PayedCard payedCard = payService.getPayedCardById(payCardId);
+        Integer instanceId = payedCard.getInstanceId();
+        Long balance = contractService.getBalance(instanceId);
+        Long giftBalance = contractService.getGiftBalance(instanceId);
+        if (balance>=0){
+            return Result.setSuccessMsg("success",new long[]{balance,giftBalance});
+        }
+        return Result.setFailMsg("fail",null);
     }
+
 
 }

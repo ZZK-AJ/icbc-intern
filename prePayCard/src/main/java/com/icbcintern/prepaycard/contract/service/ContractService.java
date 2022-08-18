@@ -124,6 +124,31 @@ public class ContractService {
     }
 
 
+    public Long getBalance(int contractInstanceId){
+        Instance instance = null;
+        try {
+            instance = getWasmInstanceByContractInstanceId(contractInstanceId);
+        } catch (Exception e) {
+            return -1L;
+        }
+        Object[] results = instance.exports.
+                getFunction("get_balance").apply(contractInstanceId);
+
+        return (Long) results[0];
+    }
+    public Long getGiftBalance(int contractInstanceId){
+        Instance instance = null;
+        try {
+            instance = getWasmInstanceByContractInstanceId(contractInstanceId);
+        } catch (Exception e) {
+            return -1L;
+        }
+        Object[] results = instance.exports.
+                getFunction("get_gift_balance").apply(contractInstanceId);
+
+        return (Long) results[0];
+    }
+
     //根据contractInstanceId获取wasmInstance
     private Instance getWasmInstanceByContractInstanceId(int contractInstanceId) throws Exception {
         ContractInstance contractInstance = contractDao.getContractInstanceById(contractInstanceId);
@@ -155,5 +180,6 @@ public class ContractService {
         }
         return result;
     }
+
 
 }

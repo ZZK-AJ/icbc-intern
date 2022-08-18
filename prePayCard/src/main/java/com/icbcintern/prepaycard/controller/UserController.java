@@ -1,5 +1,6 @@
 package com.icbcintern.prepaycard.controller;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.icbcintern.prepaycard.pojo.User;
 import com.icbcintern.prepaycard.pojo.Wallet;
 import com.icbcintern.prepaycard.service.UserService;
@@ -42,7 +43,7 @@ public class UserController {
         user.setName(userMap.get("userName"));
         user.setLoginPasswd(userMap.get("loginPasswd"));
         user.setPayPasswd(userMap.get("payPasswd"));
-        boolean r= userService.insertUser(user);
+        boolean r = userService.insertUser(user);
         // 增加 wallet 与 userWallet 表记录
         if (r) {
             Wallet wallet = new Wallet();
@@ -64,7 +65,7 @@ public class UserController {
                 result.setMsg("用户注册失败,未成功添加钱包");
                 return Result.setFailMsg("用户注册失败,未成功添加钱包", null);
             }
-        }else {
+        } else {
             return Result.setFailMsg("用户注册失败", null);
         }
     }
@@ -73,7 +74,7 @@ public class UserController {
      * 按 id 查找 user
      */
     @GetMapping("/UserInfoById/{id}")
-    public Result getUserInfoById(@PathVariable("id") int id){
+    public Result getUserInfoById(@PathVariable("id") int id) {
         Result result = new Result();
         User user = userService.getUserById(id);
         if (user != null) {
@@ -89,7 +90,7 @@ public class UserController {
      * 查询所有 user
      */
     @GetMapping("/UserInfo")
-    public Result getAllUserInfo(){
+    public Result getAllUserInfo() {
         Result result = new Result();
         List<User> userList = userService.queryUserInfo();
         if (userList != null) {
@@ -105,14 +106,14 @@ public class UserController {
      * 更新 user
      */
     @PostMapping("/updateUserById")
-    public Result updateUserById(@RequestBody Map<String,String> userMap){
+    public Result updateUserById(@RequestBody Map<String, String> userMap) {
         User user = new User();
         // todo 根据对应用户的 id 赋值
         user.setId(Integer.valueOf(userMap.get("id")));
         user.setName(userMap.get("userName"));
         user.setLoginPasswd(userMap.get("loginPasswd"));
         user.setPayPasswd(userMap.get("payPasswd"));
-        boolean r= userService.updateUserById(user);
+        boolean r = userService.updateUserById(user);
         if (r) {
             return Result.setSuccessMsg("用户更新成功", null);
         } else {
@@ -124,12 +125,12 @@ public class UserController {
      * 删除
      */
     @DeleteMapping("/deleteUserById/{id}")
-    public Result deleteUserById(@PathVariable("id") int id){
+    public Result deleteUserById(@PathVariable("id") int id) {
         Result result = new Result();
-        boolean r= userService.deleteUserById(id);
-        if (r){
+        boolean r = userService.deleteUserById(id);
+        if (r) {
             result.setMsg("删除成功");
-        }else {
+        } else {
             result.setMsg("删除失败");
             result.setCode(1);
         }
@@ -153,9 +154,9 @@ public class UserController {
 //            String token = TokenUtil.genToken(existUser);
             String token = JwtTools.createToken(existUser);
             String userId = String.valueOf(existUser.getId());
-            HashMap<String,String> data = new HashMap<>();
-            data.put("token",token);
-            data.put("userId",userId);
+            HashMap<String, String> data = new HashMap<>();
+            data.put("token", token);
+            data.put("userId", userId);
             result.setData(data);  // 返回 token 和 userId
 
         } else {
@@ -175,6 +176,20 @@ public class UserController {
         return result;
     }
 
+    @GetMapping("/getBalance")
+    public Result getBalance(@RequestHeader("Authorization") String token) throws Exception {
+        Result result = new Result();
+        DecodedJWT jwt = JwtTools.verifyToken(token);   // 解析 token, 获取用户名
+        if (jwt != null) {
+            String userName = jwt.getClaim("userName").asString();
+            User user = userService.getUserByUserName(userName);  // 获取用户信息
+            String userWalletId = userService.getWalletIdByUserId(user.getId());
+            Wallet userWallet = walletService.getWalletByWalletId(userWalletId);
+            result.setData(userWallet.getBalance());
+            result.setMsg(userWallet.getBalance().toString());
+        }
+        return result;
+    }
 
 }
 
