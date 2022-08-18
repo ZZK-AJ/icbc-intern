@@ -12,7 +12,12 @@ import java.sql.Timestamp;
 public class Consume {
     private Integer id;
     private Integer payedCardId;
-    private Integer payedAmount;
+    private Long payedAmount;
+    private Long discountPrice;
+    private Long gift;
+    private Long actualPrice;
     private Timestamp payedTime;
+    private Integer state;
+
 
 }

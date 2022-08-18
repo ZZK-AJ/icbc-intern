@@ -1,7 +1,6 @@
 package com.icbcintern.prepaycard.mapper;
 
 import com.icbcintern.prepaycard.pojo.Consume;
-import com.icbcintern.prepaycard.pojo.Review;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -17,8 +16,8 @@ public interface ConsumeMapper {
      * @param consume
      * @return
      */
-    @Insert("insert into consume(payed_card_id,payed_amount,payed_time)" +
-            " values (#{payedCardId},#{payedAmount},#{payedTime}")
+    @Insert("insert into consume(payed_card_id,payed_amount,payed_time,discount_price,gift,actual_price,state)" +
+            " values (#{payedCardId},#{payedAmount},#{payedTime},#{discountPrice},#{gift},#{actualPrice},#{state})")
     @SelectKey(statement = {"select LAST_INSERT_ID()"}, keyProperty = "id", before = false, resultType = Integer.class)
     int insertConsume(Consume consume);
 

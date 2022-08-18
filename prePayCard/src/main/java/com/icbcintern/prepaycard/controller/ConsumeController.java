@@ -3,7 +3,6 @@ package com.icbcintern.prepaycard.controller;
 import com.icbcintern.prepaycard.contract.service.ContractService;
 import com.icbcintern.prepaycard.pojo.Consume;
 import com.icbcintern.prepaycard.pojo.PayedCard;
-import com.icbcintern.prepaycard.pojo.Review;
 import com.icbcintern.prepaycard.service.ConsumeService;
 import com.icbcintern.prepaycard.service.PayService;
 import com.icbcintern.prepaycard.utils.Result;
@@ -11,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 /**
  * description: 消费 controller 层
@@ -41,10 +42,28 @@ public class ConsumeController {
         PayedCard payedCard = payService.getPayedCardById(payedCardId);
         Integer instanceId = payedCard.getInstanceId();
 
-        result = consumeService.insertConsume(consume); // 写入消费记录表
+        consume.setPayedTime(new Timestamp(System.currentTimeMillis()));
+
         result = contractService.transfer(instanceId, consume.getPayedAmount());  // 执行合约进行转账
 
-        return result;
+        try{
+            if(result.getCode()!=0) throw new Exception("扣款失败");
+            Map data = (Map) result.getData();
+            consume.setDiscountPrice(Long.valueOf(String.valueOf(data.get("discountPrice"))));
+            consume.setActualPrice(Long.valueOf(String.valueOf(data.get("actualPrice"))));
+            consume.setGift(Long.valueOf(String.valueOf(data.get("gift"))));
+            consume.setState(0);
+        }catch (Exception ignore){
+            consume.setState(result.getCode());
+        }
+
+        Result consumeResult = consumeService.insertConsume(consume); // 写入消费记录表
+        consumeResult.setCode(consume.getState());
+        if (consume.getState()!=0){
+            //输出详细的错误信息
+            consumeResult.setMsg(result.getMsg());
+        }
+        return consumeResult;
     }
 
     /**
