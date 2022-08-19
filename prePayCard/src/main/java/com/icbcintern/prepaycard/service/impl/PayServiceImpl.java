@@ -57,6 +57,17 @@ public class PayServiceImpl implements PayService {
         return payedCardMapper.getPayedCardById(id);
     }
 
+    /**
+     * 获取商户被购买的预付卡信息
+     *
+     * @param merchantId
+     * @return
+     */
+    @Override
+    public List<PayedCard> getPayedCardByMerchantId(Integer merchantId) {
+        return payedCardMapper.getPayedCardByMerchantId(merchantId);
+    }
+
     @Override
     public PayedCard getPayedCardByInstanceId(Integer instanceId) {
         return payedCardMapper.getPayedCardByInstanceId(instanceId);

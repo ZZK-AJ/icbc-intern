@@ -199,11 +199,32 @@ public class PayController {
         Integer instanceId = payedCard.getInstanceId();
         Long balance = contractService.getBalance(instanceId);
         Long giftBalance = contractService.getGiftBalance(instanceId);
-        if (balance>=0){
-            return Result.setSuccessMsg("success",new long[]{balance,giftBalance});
+        if (balance >= 0) {
+            return Result.setSuccessMsg("success", new long[]{balance, giftBalance});
         }
-        return Result.setFailMsg("fail",null);
+        return Result.setFailMsg("fail", null);
     }
 
+
+    /**
+     * 商户获取被购买的预付卡信息
+     *
+     * @param merchantId 商户id
+     * @return Result
+     */
+    @GetMapping("/payCard/merchant/{merchantId}")
+    public Result getUserCardByMerchantId(@PathVariable("merchantId") int merchantId) {
+        Result result = new Result();
+        List<PayedCard> payedCards = payService.getPayedCardByMerchantId(merchantId);
+
+        if (payedCards == null) {
+            result.setCode(1);
+            result.setMsg("商户没有预付卡被购买");
+        } else {
+            Result.ok();
+            result.setData(payedCards);
+        }
+        return result;
+    }
 
 }

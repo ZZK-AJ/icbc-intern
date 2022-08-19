@@ -8,8 +8,23 @@ import java.util.List;
 public interface PayService {
     Boolean insertPayCard(PayedCard PayedCard);
 
+    /**
+     * 购买预付卡之后，写入用户预付卡关系表
+     *
+     * @param userId       用户 id
+     * @param payCardId    预付卡id
+     * @param userWalletId 用户钱包 id
+     * @return Boolean
+     */
     Boolean insertUserPayedCard(int userId, int payCardId, String userWalletId);
 
+    /**
+     * 购买预付卡之后，写入商户预付卡关系表
+     *
+     * @param merchantId 商户 id
+     * @param payCardId  预付卡 id
+     * @return Boolean
+     */
     Boolean insertMerchantPayedCard(int merchantId, int payCardId);
 
     Boolean updatePayCardById(PayedCard payedCard);
@@ -17,6 +32,14 @@ public interface PayService {
     List<PayedCard> getAll();
 
     PayedCard getPayedCardById(Integer id);
+
+    /**
+     * 获取商户被购买的预付卡信息
+     *
+     * @param merchantId
+     * @return
+     */
+    List<PayedCard> getPayedCardByMerchantId(Integer merchantId);
 
     List<PayedCard> getPayedCardByCardId(Integer cardId);
 

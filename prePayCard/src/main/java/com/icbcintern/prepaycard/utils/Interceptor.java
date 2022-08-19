@@ -14,11 +14,11 @@ public class Interceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("执行 UserLoginInterceptor 拦截器的 preHandle 方法");
         try {
             response.setCharacterEncoding("UTF-8");
             //获取 token
-            final String token = request.getHeader("authorization");
+            final String token = request.getHeader("Authorization");
+//            System.out.println("token: " + token);
 
             if (token == null) {
                 response.getWriter().write("未登录，请登录后获取 token！");
@@ -28,6 +28,7 @@ public class Interceptor implements HandlerInterceptor {
 
 //            Map<String, Claim> userData = JwtTools.verifyToken(token);
             DecodedJWT jwt = JwtTools.verifyToken(token);
+
             if (jwt == null || StringUtils.isEmpty(jwt.getClaim("userName").asString())) {
                 response.setStatus(401);
                 response.getWriter().write("token 不合法！");
@@ -37,7 +38,6 @@ public class Interceptor implements HandlerInterceptor {
             // System.out.println(request.getContextPath());
             // response.sendRedirect(request.getContextPath() + "UserLogin");  // 重定向
             return true;
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,7 +52,6 @@ public class Interceptor implements HandlerInterceptor {
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        System.out.println("执行了拦截器的 postHandle 方法");
     }
 
     /**
@@ -60,6 +59,5 @@ public class Interceptor implements HandlerInterceptor {
      */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        System.out.println("执行了拦截器的 afterCompletion 方法");
     }
 }

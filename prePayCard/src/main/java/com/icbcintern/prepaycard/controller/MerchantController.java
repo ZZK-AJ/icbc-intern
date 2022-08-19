@@ -1,15 +1,14 @@
 package com.icbcintern.prepaycard.controller;
 
-import com.icbcintern.prepaycard.pojo.Merchant;
-import com.icbcintern.prepaycard.pojo.User;
-import com.icbcintern.prepaycard.pojo.Wallet;
-import com.icbcintern.prepaycard.service.MerchantService;
-import com.icbcintern.prepaycard.service.WalletService;
+import com.icbcintern.prepaycard.contract.pojo.UserCard;
+import com.icbcintern.prepaycard.pojo.*;
+import com.icbcintern.prepaycard.service.*;
 import com.icbcintern.prepaycard.utils.JwtTools;
 import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,10 +19,18 @@ public class MerchantController {
     MerchantService merchantService;
     @Autowired
     WalletService walletService;
+    @Autowired
+    PayService payService;
+    @Autowired
+    CardService cardService;
+    @Autowired
+    UserCardService userCardService;
+    @Autowired
+    UserService userService;
 
     /**
      * 商家 注册
-     * todo 商家注册成功后，自动生成钱包id 商家及钱包的关系表，钱包账户表 的记录
+     * 商家注册成功后，自动生成钱包id 商家及钱包的关系表，钱包账户表 的记录
      */
     @PostMapping("/merchantRegister")
     public Result MerchantRegister(@RequestBody Map<String, String> merchantMap) {
@@ -84,6 +91,22 @@ public class MerchantController {
         } else {
             result.setCode(1);
             result.setMsg("用户查询失败");
+        }
+        return result;
+    }
+
+    /**
+     * 按 merchant name 查找 merchant
+     */
+    @GetMapping("/merchantInfoByName/{merchantName}")
+    public Result getMerchantInfoByName(@PathVariable("merchantName") String merchantName) {
+        Result result = new Result();
+        Merchant merchant = merchantService.getMerchantByName(merchantName);
+        if (merchant != null) {
+            result.setData(merchant);
+        } else {
+            result.setCode(1);
+            result.setMsg("商户查询失败");
         }
         return result;
     }
@@ -154,7 +177,7 @@ public class MerchantController {
             return result;
         }
         if (existMerchant.getLoginPasswd().equals(merchantMap.get("loginPasswd"))) {
-            result.setMsg("商户登录中");
+            result.setMsg("商户已登录");
             // 返回 token
             String token = JwtTools.createToken(existMerchant);
             result.setData(token);  // 返回 token
@@ -166,13 +189,48 @@ public class MerchantController {
     }
 
     /**
-     * 用户修改密码
+     * 商户修改密码
      */
     @PostMapping("/changeMerchantPasswd")
     public Result changePasswd(@RequestBody Map<String, String> merchantMap) {
         Result result = new Result();
 //        todo 修改密码
         return result;
+    }
+
+    /**
+     * 获取这个商户被用户购买的预付卡信息
+     *
+     * @param merchantId
+     * @return
+     */
+    @GetMapping("/merchant/payedCardInfo/{merchantId}")
+    public Result merchantPayCardInfo(@PathVariable("merchantId") int merchantId) {
+        List<MerchantPayedCardInfo> merchantPayedCardInfoList = new ArrayList<>();
+        // payedCard 表获取该商户被购买的所有预付卡表信息
+        List<PayedCard> payedCards = payService.getPayedCardByMerchantId(merchantId);
+        // 根据 cardId 查询 card 表里面这个预付卡的信息
+        for (PayedCard payedCard : payedCards) {
+            Card card = cardService.getCardById(payedCard.getCardId());
+            if (card == null) {
+                return Result.setFailMsg("查询预付卡类型失败", null);
+            }
+            // 根据 id 查询 用户预付卡 关系表 userCard，得到用户 id
+            UserCard userCard = userCardService.getUserCardByCardId(payedCard.getId());
+            if (userCard == null) {
+                return Result.setFailMsg("查询预付卡购卡用户失败", null);
+            }
+            User userById = userService.getUserById(userCard.getUserId()); // 获取用户名
+            if (userById == null) {
+                return Result.setFailMsg("查询预付卡购卡用户失败", null);
+            }
+
+            MerchantPayedCardInfo merchantPayedCardInfo = new MerchantPayedCardInfo(userById.getName(), payedCard.getId(), payedCard.getCardId(), payedCard.getCardStatus(), card.getReviewId(), card.getMerchantId(), card.getWalletId(), card.getCardName(), card.getCardType(), card.getCardInfo(), card.getCardAmount(), card.getGiftAmount(), card.getDiscountRate());
+            merchantPayedCardInfoList.add(merchantPayedCardInfo);
+        }
+
+        System.out.println(merchantPayedCardInfoList);
+        return Result.setSuccessMsg("商户被购买的预付卡信息", merchantPayedCardInfoList);
     }
 
 }

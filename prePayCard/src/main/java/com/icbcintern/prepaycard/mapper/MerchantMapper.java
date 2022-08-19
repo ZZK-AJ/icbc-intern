@@ -52,4 +52,7 @@ public interface MerchantMapper {
      */
     @Insert("insert into merchantWallet(merchant_id,wallet_id) values (#{merchantId},#{walletId})")
     int insertMerchantWallet(String walletId, int merchantId);
+
+    @Select("select wallet_id from merchantWallet where merchant_id=#{merchantId}")
+    String getMerchantWalletByMerchantId(Integer merchantId);
 }
