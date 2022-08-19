@@ -36,6 +36,9 @@ public interface PayedCardMapper {
     @Select("select * from payedCard where card_id=#{cardId}")
     List<PayedCard> getPayedCardByCardId(Integer cardId);
 
+    @Select("select * from payedCard where merchant_id=#{merchantId}")
+    List<PayedCard> getPayedCardByMerchantId(Integer merchantId);
+
     @Select("select * from payedCard where id=#{id}")
     PayedCard getPayedCardById(Integer id);
 

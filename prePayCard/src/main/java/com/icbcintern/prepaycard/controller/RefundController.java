@@ -7,8 +7,10 @@ import com.icbcintern.prepaycard.service.ConsumeService;
 import com.icbcintern.prepaycard.service.PayService;
 import com.icbcintern.prepaycard.service.UserService;
 import com.icbcintern.prepaycard.utils.Result;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,9 +63,14 @@ public class RefundController {
         return result;
     }
 
-
-    @PostMapping("/refund/merchantId/{merchantId}")
-    public Result merchantIdRefund(@PathVariable("merchantId") Integer merchantId) {
+    /**
+     * 查询商户被退卡的信息
+     *
+     * @param merchantId 商户信息
+     * @return Result
+     */
+    @GetMapping("/refund/merchant/{merchantId}")
+    public Result RefundBymerchantId(@PathVariable("merchantId") Integer merchantId) {
         Result result = new Result();
         List<Refund> refundInfos = new ArrayList<>();
         List<PayedCard> payedCardRefunds = payService.getPayedCardBymMerchantCardStatus(merchantId, "1");  // 对应 merchantId 状态为1(申请退卡) 的预付卡
@@ -104,4 +111,39 @@ public class RefundController {
         return result;
     }
 
+    /**
+     * 商户同意退卡 退卡状态更新为退卡
+     *
+     * @param payedCardId 预付卡 id
+     * @return Result
+     */
+    @PostMapping("/refund/pass/{payedCardId}")
+    public Result refundPass(@PathVariable("payedCardId") int payedCardId) {
+        // 根据 预付卡id 更新 payedCard 表状态
+        PayedCard payedCardById = payService.getPayedCardById(payedCardId);
+        payedCardById.setCardStatus(PayedCard.STATUS_TYPE_RETURN);  // 设置状态为退卡
+        if (payService.updatePayCardById(payedCardById)) {
+            return Result.setSuccessMsg("更新退卡状态(退卡)成功！", null);
+        } else {
+            return Result.setFailMsg("更新退卡状态(退卡)失败", null);
+        }
+    }
+
+    /**
+     * 商户拒绝退卡 退卡状态正常使用
+     *
+     * @param payedCardId 预付卡 id
+     * @return Result
+     */
+    @PostMapping("/refund/reject/{payedCardId}")
+    public Result refundReject(@PathVariable("payedCardId") int payedCardId) {
+        // 根据 预付卡id 更新 payedCard 表状态
+        PayedCard payedCardById = payService.getPayedCardById(payedCardId);
+        payedCardById.setCardStatus(PayedCard.STATUS_TYPE_NORMAL);  // 设置状态为正常
+        if (payService.updatePayCardById(payedCardById)) {
+            return Result.setSuccessMsg("更新退卡状态(正常)成功！", null);
+        } else {
+            return Result.setFailMsg("更新退卡状态(正常)失败", null);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.icbcintern.prepaycard.controller;
 import com.icbcintern.prepaycard.pojo.Card;
 import com.icbcintern.prepaycard.pojo.Review;
 import com.icbcintern.prepaycard.service.CardService;
+import com.icbcintern.prepaycard.service.MerchantService;
 import com.icbcintern.prepaycard.service.ReviewService;
 import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,18 @@ public class ReviewController {
     ReviewService reviewService;
     @Autowired
     CardService cardService;
+    @Autowired
+    MerchantService merchantService;
 
     @PostMapping("/review/submit")
     public Result submit(@RequestBody Review review) {
         //TODO: 判断是否商户本人提交，校验提交者的商户id是否与审核表中一致
 
+        System.out.println(review);
+
+        Integer merchantId = review.getMerchantId();  // merchant_id 在 merchantWallet 表获取 wallet_id
+        String merchantWalletId = merchantService.getMerchantWalletByMerchantId(merchantId);
+        review.setWalletId(merchantWalletId);
         review.setReviewStatus(Review.STATUS_TYPE_PROCESSING);
         return reviewService.insertReview(review);
     }
@@ -46,6 +54,12 @@ public class ReviewController {
         return result;
     }
 
+    /**
+     * 通过 merchantId 查询提交的审核记录
+     *
+     * @param merchantId 商户id
+     * @return Result
+     */
     @GetMapping("/review/merchantId/{merchantId}")
     public Result getByMerchantId(@PathVariable("merchantId") int merchantId) {
         List<Review> reviews = reviewService.getReviewByMerchantId(merchantId);

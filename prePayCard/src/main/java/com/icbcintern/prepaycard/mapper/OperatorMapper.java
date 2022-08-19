@@ -12,7 +12,7 @@ public interface OperatorMapper {
     int insertOperator(Operator operator);
 
     /**
-     * 根据 用户名 查询 merchant 信息
+     * 根据 operator_name 查询 运营方 信息
      */
     @Results(id = "operatorNameResultMap", value = {@Result(property = "name", column = "operator_name")})
 //    @ResultMap("operatorNameResultMap")

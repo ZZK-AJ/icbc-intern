@@ -112,4 +112,10 @@ public class MerchantServiceImpl implements MerchantService {
             throw new RuntimeException("插入信息失败了:" + e.getMessage());
         }
     }
+
+    @Override
+    public String getMerchantWalletByMerchantId(Integer merchantId) {
+        return merchantMapper.getMerchantWalletByMerchantId(merchantId);
+    }
+
 }

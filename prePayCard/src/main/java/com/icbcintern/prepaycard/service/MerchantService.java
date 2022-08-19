@@ -11,7 +11,7 @@ public interface MerchantService {
     // 按id查找
     Merchant getMerchantById(int id);
 
-    //按 userName 查找
+    //按 merchantName 查找
     Merchant getMerchantByName(String merchantName);
 
     //查询所有
@@ -25,4 +25,7 @@ public interface MerchantService {
 
     // 增加 商户钱包关系表
     boolean insertMerchantWallet(String walletId, int merchantId);
+
+    // 根据 merchantId 获取 walletId
+    String getMerchantWalletByMerchantId(Integer merchantId);
 }
