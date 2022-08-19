@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,7 +68,8 @@ public class PayController {
         payCard.setCardId(cardType.getId());
         payCard.setMerchantId(cardType.getMerchantId());
         payCard.setWalletId(walletId);
-
+        payCard.setPayTime(new Timestamp(System.currentTimeMillis()));
+//       TODO payCard.setExpireTime();
         // 先插入钱包
         // 调用智能合约进行签约 签约之后会有转账到运营方钱包的操作
         payCard.setInstanceId(0);  // 默认先置为 0，签约后返回实际 instance_id

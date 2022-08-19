@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +16,9 @@ public class PayedCard {
     private String walletId; // 冻结的运营方钱包 id
     private Integer cardStatus;  // 预付卡状态，正常 0, 不可用 1, 已退卡 2
     private Integer instanceId;  // 合约实例 id
+    private Timestamp payTime;
+    private Timestamp expireTime;
+
 
     public final static Integer STATUS_TYPE_NORMAL = 0;
     public final static Integer STATUS_TYPE_FORBID = 1;
