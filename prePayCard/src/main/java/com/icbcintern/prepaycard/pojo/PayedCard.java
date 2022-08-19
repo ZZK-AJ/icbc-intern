@@ -19,7 +19,6 @@ public class PayedCard {
     private Timestamp payTime;
     private Timestamp expireTime;
 
-
     public final static Integer STATUS_TYPE_NORMAL = 0;
     public final static Integer STATUS_TYPE_FORBID = 1;
     public final static Integer STATUS_TYPE_RETURN = 2;

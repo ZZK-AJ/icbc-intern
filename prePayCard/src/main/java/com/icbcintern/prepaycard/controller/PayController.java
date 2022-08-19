@@ -69,7 +69,7 @@ public class PayController {
         payCard.setMerchantId(cardType.getMerchantId());
         payCard.setWalletId(walletId);
         payCard.setPayTime(new Timestamp(System.currentTimeMillis()));
-//       TODO payCard.setExpireTime();
+        // TODO payCard.setExpireTime();
         // 先插入钱包
         // 调用智能合约进行签约 签约之后会有转账到运营方钱包的操作
         payCard.setInstanceId(0);  // 默认先置为 0，签约后返回实际 instance_id
