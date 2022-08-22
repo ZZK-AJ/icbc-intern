@@ -7,7 +7,6 @@ import com.icbcintern.prepaycard.service.ConsumeService;
 import com.icbcintern.prepaycard.service.PayService;
 import com.icbcintern.prepaycard.service.UserService;
 import com.icbcintern.prepaycard.utils.Result;
-import org.apache.ibatis.annotations.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class RefundController {
@@ -48,10 +45,11 @@ public class RefundController {
         payedCard.setCardStatus(1);  // 修改卡状态为不可用，即为退卡中
         // 调用合约执行退费
         try {
-            contractService.refund(payedCard.getInstanceId());
+            result = contractService.refund(payedCard.getInstanceId());
         } catch (Exception e) {
             return new Result(1, e.toString(), null);
         }
+        if (result.getCode()!=0)return result;
         // 修改对应预付卡id的预付卡状态
         if (payService.updatePayCardById(payedCard)) {
             Result.ok();
