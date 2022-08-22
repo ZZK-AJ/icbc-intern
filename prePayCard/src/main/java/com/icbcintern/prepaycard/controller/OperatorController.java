@@ -56,10 +56,7 @@ public class OperatorController {
             // 返回 token
             String token = JwtTools.createToken(existOperator);
             String operatorId = String.valueOf(existOperator.getId());
-            HashMap<String, String> data = new HashMap<>();
-            data.put("token", token);
-            data.put("operatorId", operatorId);
-            return Result.setSuccessMsg("运营方已登录", data);
+            return Result.setSuccessMsg("运营方已登录", token);
         } else {
             return Result.setFailMsg("运营方登录失败，查询登录密码是否错误", null);
         }

@@ -23,6 +23,7 @@ public class Review {
     private Integer reviewStatus;
     private Integer giftAmount;
     private Integer discountRate;
+    private String expireDate;
 
     public final static Integer NAME_LIMIT_LENGTH = 40;
     public final static Integer TYPE_LIMIT_LENGTH = 10;

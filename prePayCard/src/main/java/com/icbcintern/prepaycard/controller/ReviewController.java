@@ -29,8 +29,7 @@ public class ReviewController {
     @PostMapping("/review/submit")
     public Result submit(@RequestBody Review review) {
         //TODO: 判断是否商户本人提交，校验提交者的商户id是否与审核表中一致
-
-        System.out.println(review);
+//        System.out.println(review);
 
         Integer merchantId = review.getMerchantId();  // merchant_id 在 merchantWallet 表获取 wallet_id
         String merchantWalletId = merchantService.getMerchantWalletByMerchantId(merchantId);
@@ -70,6 +69,12 @@ public class ReviewController {
         return result;
     }
 
+    /**
+     * 按照审核状态查询对应的记录
+     *
+     * @param reviewStatus 审核状态 '审核中 0, 审核通过 1, 审核失败 2'
+     * @return Result
+     */
     @GetMapping("/review/status/{reviewStatus}")
     public Result getByReviewStatus(@PathVariable("reviewStatus") int reviewStatus) {
 

@@ -8,8 +8,8 @@ import java.util.List;
 
 @Mapper
 public interface PayedCardMapper {
-    @Insert("insert into payedCard(merchant_id,card_id,wallet_id,card_status,instance_id)" +
-            " values (#{merchantId},#{cardId},#{walletId},#{cardStatus},#{instanceId})")
+    @Insert("insert into payedCard(merchant_id,card_id,wallet_id,card_status,instance_id,expire_time),pay_time" +
+            " values (#{merchantId},#{cardId},#{walletId},#{cardStatus},#{instanceId},#{expireTime},#{payTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
         //新增时将主键返回
     int insertPayCard(PayedCard payedCard);

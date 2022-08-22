@@ -22,6 +22,7 @@ public class Card {
     private Long cardAmount;  // 预付卡金额
     private Integer giftAmount;  // 商户预设赠送的金额
     private Integer discountRate;  // 商户预设消费折扣百分比,0-100, 0为免费, 100为原价
+    private String expireDate;  // 过期时间
 
     public final static Integer NAME_LIMIT_LENGTH = 40;
     public final static Integer TYPE_LIMIT_LENGTH = 10;

@@ -8,8 +8,8 @@ import java.util.List;
 @Mapper
 public interface ReviewMapper {
 
-    @Insert("insert into review(merchant_id,wallet_id,card_name,card_type,card_info,card_amount,review_status,gift_amount,discount_rate)" +
-            " values (#{merchantId},#{walletId},#{cardName},#{cardType},#{cardInfo},#{cardAmount},#{reviewStatus},#{giftAmount},#{discountRate})")
+    @Insert("insert into review(merchant_id,wallet_id,card_name,card_type,card_info,card_amount,review_status,gift_amount,discount_rate, expire_date)" +
+            " values (#{merchantId},#{walletId},#{cardName},#{cardType},#{cardInfo},#{cardAmount},#{reviewStatus},#{giftAmount},#{discountRate}, #{expireDate})")
     @SelectKey(statement = {"select LAST_INSERT_ID()"}, keyProperty = "id", before = false, resultType = Integer.class)
     int insertReview(Review review);
 

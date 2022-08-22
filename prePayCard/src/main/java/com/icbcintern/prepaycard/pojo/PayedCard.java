@@ -16,8 +16,8 @@ public class PayedCard {
     private String walletId; // 冻结的运营方钱包 id
     private Integer cardStatus;  // 预付卡状态，正常 0, 不可用 1, 已退卡 2
     private Integer instanceId;  // 合约实例 id
-    private Timestamp payTime;
-    private Timestamp expireTime;
+    private Timestamp payTime;  // 用户购买预付卡时间
+    private Timestamp expireTime;  // 预付卡过期时间
 
     public final static Integer STATUS_TYPE_NORMAL = 0;
     public final static Integer STATUS_TYPE_FORBID = 1;

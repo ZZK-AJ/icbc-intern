@@ -51,6 +51,7 @@ public class PayController {
         String userName = jwt.getClaim("userName").asString();
         User user = userService.getUserByUserName(userName);  // 获取用户信息
         Card cardType = cardService.getCardById(cardTypeId); // 通过卡类型 id 查询对应预付卡类型的信息
+
 //      生成运营方钱包表记录,设置初始运营方钱包为冻结，金额为 0；运营方钱包和预付卡进行关联；
         Wallet wallet = new Wallet();
         String walletId = UUID.randomUUID().toString();  // 运营方钱包 id，购买一张预付卡生成一个运营方
@@ -63,14 +64,17 @@ public class PayController {
             return Result.setFailMsg("未成功添加运营方钱包", null);
         }
 
+        // todo 生成购买日期和过期日期
         PayedCard payCard = new PayedCard();
         payCard.setCardStatus(PayedCard.STATUS_TYPE_NORMAL);  // 设置预付卡状态为正常
         payCard.setCardId(cardType.getId());
         payCard.setMerchantId(cardType.getMerchantId());
         payCard.setWalletId(walletId);
-        payCard.setPayTime(new Timestamp(System.currentTimeMillis()));
-        // TODO payCard.setExpireTime();
-        // 先插入钱包
+        int expireDate = Integer.parseInt(cardType.getExpireDate());
+        payCard.setPayTime(new Timestamp(System.currentTimeMillis()));  // 设置购卡时间和过期时间
+        Timestamp expireTime = new Timestamp(System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 365 * expireDate);
+        payCard.setExpireTime(expireTime);
+
         // 调用智能合约进行签约 签约之后会有转账到运营方钱包的操作
         payCard.setInstanceId(0);  // 默认先置为 0，签约后返回实际 instance_id
         Boolean insertPayCardResult = payService.insertPayCard(payCard);  // 用户购买预付卡之后，写入预付卡表
@@ -206,7 +210,6 @@ public class PayController {
         }
         return Result.setFailMsg("fail", null);
     }
-
 
     /**
      * 商户获取被购买的预付卡信息
