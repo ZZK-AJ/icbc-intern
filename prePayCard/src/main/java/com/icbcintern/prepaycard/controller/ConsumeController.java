@@ -40,14 +40,20 @@ public class ConsumeController {
         Integer payedCardId = consume.getPayedCardId();  // 预付卡id
         // 通过 payedCardId 查询 预付卡表，获取合约实例 id
         PayedCard payedCard = payService.getPayedCardById(payedCardId);
+        // 消费时校验预付卡是否超出过期时间
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        if (payedCard.getExpireTime().before(now)) {   // 过期时间早于当下时间
+            return Result.setFailMsg("预付卡已过期", null);
+        }
+
         Integer instanceId = payedCard.getInstanceId();
 
         consume.setPayedTime(new Timestamp(System.currentTimeMillis()));
 
         result = contractService.transfer(instanceId, consume.getPayedAmount());  // 执行合约进行转账
 
-        try{
-            if(result.getCode()!=0) throw new Exception("扣款失败");
+        try {
+            if (result.getCode() != 0) throw new Exception("扣款失败");
             Map data = (Map) result.getData();
             consume.setDiscountPrice(Long.valueOf(String.valueOf(data.get("discountPrice"))));
             consume.setActualPrice(Long.valueOf(String.valueOf(data.get("actualPrice"))));

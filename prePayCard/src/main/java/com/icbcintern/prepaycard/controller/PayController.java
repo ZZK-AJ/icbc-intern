@@ -43,7 +43,7 @@ public class PayController {
     @Transactional
     public Result insertPayCard(@RequestHeader("Authorization") String token,
                                 @PathVariable("id") int cardTypeId) throws Exception {
-        Result result = new Result();
+//        Result result = new Result();
         DecodedJWT jwt = JwtTools.verifyToken(token);   // 解析 token, 获取用户名
         if (jwt == null || StringUtils.isEmpty(jwt.getClaim("userName").asString())) {
             return Result.setFailMsg("token 不合法", null);
@@ -64,7 +64,6 @@ public class PayController {
             return Result.setFailMsg("未成功添加运营方钱包", null);
         }
 
-        // todo 生成购买日期和过期日期
         PayedCard payCard = new PayedCard();
         payCard.setCardStatus(PayedCard.STATUS_TYPE_NORMAL);  // 设置预付卡状态为正常
         payCard.setCardId(cardType.getId());
@@ -101,7 +100,6 @@ public class PayController {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return Result.setFailMsg("未成功从用户钱包扣款", null);
         }
-
 
         int instanceId = contractService.signContract(payCard.getId(), 1);
         payCard.setInstanceId(instanceId);
