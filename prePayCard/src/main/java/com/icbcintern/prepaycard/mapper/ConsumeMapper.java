@@ -29,4 +29,6 @@ public interface ConsumeMapper {
      */
     @Select("select * from consume where payed_card_id=#{payedCardId}")
     List<Consume> getConsumeByPayedCardId(Integer payedCardId);
+    @Select("select * from consume where id=#{consumeId}")
+    Consume getConsumeById(int consumeId);
 }

@@ -30,4 +30,9 @@ public class ConsumeServiceImpl implements ConsumeService {
     public List<Consume> getConsumeByPayedCardId(Integer payedCardId) {
         return consumeMapper.getConsumeByPayedCardId(payedCardId);
     }
+
+    @Override
+    public Consume getConsumeById(int consumeId) {
+        return consumeMapper.getConsumeById(consumeId);
+    }
 }

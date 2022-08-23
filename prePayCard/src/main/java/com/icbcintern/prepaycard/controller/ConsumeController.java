@@ -76,7 +76,7 @@ public class ConsumeController {
      * 根据预付卡 id 查询对应消费记录
      */
     @GetMapping("/consume/id/{payed_card_id}")
-    public Result getConsumeById(@PathVariable("payed_card_id") int payed_card_id) {
+    public Result getConsumeByPayCardId(@PathVariable("payed_card_id") int payed_card_id) {
         Result result = new Result();
         List<Consume> consumes = consumeService.getConsumeByPayedCardId(payed_card_id);
         if (consumes == null) {
@@ -88,6 +88,18 @@ public class ConsumeController {
         }
         return result;
     }
-
+    @GetMapping("/consume/consumeId/{consumeId}")
+    public Result getConsumeById(@PathVariable("consumeId") int consumeId) {
+        Result result = new Result();
+        Consume consume = consumeService.getConsumeById(consumeId);
+        if (consume == null) {
+            result.setCode(1);
+            result.setMsg("查询的消费记录不存在");
+        } else {
+            result.setCode(0);
+            result.setData(consume);
+        }
+        return result;
+    }
 
 }

@@ -9,4 +9,6 @@ public interface ConsumeService {
     Result insertConsume(Consume consume) throws Exception;
 
     List<Consume> getConsumeByPayedCardId(Integer payedCardId);
+
+    Consume getConsumeById(int consumeId);
 }
