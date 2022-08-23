@@ -142,8 +142,6 @@ public class MerchantController {
         if (r) {
             return Result.setSuccessMsg("商户更新成功", null);
         } else {
-            Result.unOk();
-            result.setMsg("商户更新失败");
             return Result.setFailMsg("商户更新失败", null);
         }
     }

@@ -49,14 +49,16 @@ public class RefundController {
         } catch (Exception e) {
             return new Result(1, e.toString(), null);
         }
-        if (result.getCode()!=0)return result;
+        if (result.getCode() != 0) return result;
         // 修改对应预付卡id的预付卡状态
         if (payService.updatePayCardById(payedCard)) {
             Result.ok();
             result.setData(payedCard);
+//            return Result.setSuccessMsg("",payedCard);
         } else {
             Result.unOk();
             result.setMsg("提交退卡失败");
+//            Result.setFailMsg("提交退卡失败", null);
         }
         return result;
     }
@@ -73,40 +75,30 @@ public class RefundController {
         List<Refund> refundInfos = new ArrayList<>();
         List<PayedCard> payedCardRefunds = payService.getPayedCardBymMerchantCardStatus(merchantId, "1");  // 对应 merchantId 状态为1(申请退卡) 的预付卡
         if (payedCardRefunds == null) {
-            Result.unOk();
-            result.setData("查询商户退卡状态的预付卡失败");
-            return result;
+            return Result.setFailMsg("查询商户退卡状态的预付卡失败", null);
         }
 
         for (PayedCard payedCard : payedCardRefunds) {
             Integer card_id = payedCard.getCardId(); // 卡类型id
             Card card = cardService.getCardById(card_id); // 查询预付卡类型信息表，返回预付卡类型信息
             if (card == null) {
-                Result.unOk();
-                result.setData("查询 预付卡类型 失败");
-                return result;
+                return Result.setFailMsg("查询预付卡类型失败", null);
             }
             // 根据 用户购买的预付卡 id 获取用户预付卡记录信息
             UserCard userCard = payService.getUserCardByPayedCardId(payedCard.getId());
             if (userCard == null) {
-                Result.unOk();
-                result.setData("查询 用户卡关系 失败");
-                return result;
+                return Result.setFailMsg("查询用户卡关系失败", null);
             }
             User user = userService.getUserById(userCard.getUserId()); // 根据用户 id 查询 用户名
             if (user == null) {
-                Result.unOk();
-                result.setData("查询 用户 失败");
-                return result;
+                return Result.setFailMsg("查询用户失败", null);
             }
 
             Refund refundInfo = new Refund(payedCard.getId(), user.getName(), card.getId(), card.getCardName(), card.getCardType(), card.getCardInfo(), card.getCardAmount(), card.getGiftAmount(), card.getDiscountRate());
             refundInfos.add(refundInfo);
         }
         System.out.println(refundInfos);
-        Result.ok();
-        result.setData(refundInfos);
-        return result;
+        return Result.setSuccessMsg("", refundInfos);
     }
 
     /**
