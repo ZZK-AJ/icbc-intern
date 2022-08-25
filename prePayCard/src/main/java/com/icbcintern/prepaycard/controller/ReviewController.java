@@ -98,7 +98,7 @@ public class ReviewController {
     @PostMapping("/review/pass/{id}")
     public Result pass(@PathVariable("id") int id) {
         //TODO: 鉴权,确保是管理员审核的
-
+        // 执行更改 reivew 表状态
         if (reviewService.updateStatusById(id, Review.STATUS_TYPE_PASSED)) {
             // 审核通过之后，生成预付卡 和 预付卡商户关系表 记录
             Review review = reviewService.getReviewById(id);  // 通过 id 查询通过的审核记录
@@ -112,6 +112,7 @@ public class ReviewController {
             card.setCardAmount(review.getCardAmount());
             card.setGiftAmount(review.getGiftAmount());
             card.setDiscountRate(review.getDiscountRate());
+            card.setExpireDate(review.getExpireDate());
             // 插入 预付卡类型表 Card  预付卡产品的记录
             return cardService.insertCard(card);
             // todo 应该在用户购卡之后生成 插入 商户预付卡关系表 merchantCard 记录

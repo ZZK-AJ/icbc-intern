@@ -23,7 +23,8 @@ public class CardServiceImpl implements CardService {
             // 如果影响行数大于0，那么就是增加成功
             return Result.ok();
         } else {
-            throw new RuntimeException("插入信息失败,插入行数有误");
+            return Result.unOk();
+//            throw new RuntimeException("插入信息失败,插入行数有误");
         }
     }
 

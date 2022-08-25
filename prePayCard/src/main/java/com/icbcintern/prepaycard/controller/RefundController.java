@@ -44,22 +44,22 @@ public class RefundController {
         PayedCard payedCard = payService.getPayedCardById(payed_card_id);
         payedCard.setCardStatus(1);  // 修改卡状态为不可用，即为退卡中
         // 调用合约执行退费
-        try {
-            result = contractService.refund(payedCard.getInstanceId());
-        } catch (Exception e) {
-            return new Result(1, e.toString(), null);
-        }
-        if (result.getCode() != 0) return result;
-        // 修改对应预付卡id的预付卡状态
-        if (payService.updatePayCardById(payedCard)) {
-            Result.ok();
-            result.setData(payedCard);
-//            return Result.setSuccessMsg("",payedCard);
-        } else {
-            Result.unOk();
-            result.setMsg("提交退卡失败");
-//            Result.setFailMsg("提交退卡失败", null);
-        }
+//        try {
+//            result = contractService.refund(payedCard.getInstanceId());
+//        } catch (Exception e) {
+//            return new Result(1, e.toString(), null);
+//        }
+//        if (result.getCode() != 0) return result;
+//        // 修改对应预付卡id的预付卡状态
+//        if (payService.updatePayCardById(payedCard)) {
+//            Result.ok();
+//            result.setData(payedCard);
+////            return Result.setSuccessMsg("",payedCard);
+//        } else {
+//            Result.unOk();
+//            result.setMsg("提交退卡失败");
+////            Result.setFailMsg("提交退卡失败", null);
+//        }
         return result;
     }
 
@@ -109,14 +109,28 @@ public class RefundController {
      */
     @PostMapping("/refund/pass/{payedCardId}")
     public Result refundPass(@PathVariable("payedCardId") int payedCardId) {
-        // 根据 预付卡id 更新 payedCard 表状态
-        PayedCard payedCardById = payService.getPayedCardById(payedCardId);
-        payedCardById.setCardStatus(PayedCard.STATUS_TYPE_RETURN);  // 设置状态为退卡
-        if (payService.updatePayCardById(payedCardById)) {
-            return Result.setSuccessMsg("更新退卡状态(退卡)成功！", null);
-        } else {
-            return Result.setFailMsg("更新退卡状态(退卡)失败", null);
+        Result result = new Result();
+
+        // 根据预付卡id 查询预付卡信息
+        PayedCard payedCard = payService.getPayedCardById(payedCardId);
+        payedCard.setCardStatus(PayedCard.STATUS_TYPE_RETURN);  // 设置状态为退卡
+
+        // 调用合约执行退费
+        try {
+            result = contractService.refund(payedCard.getInstanceId());
+        } catch (Exception e) {
+            return new Result(1, e.toString(), null);
         }
+        if (result.getCode() != 0) return result;
+        // 修改对应预付卡id的预付卡状态
+        if (payService.updatePayCardById(payedCard)) {
+            result.setCode(0);
+            result.setData(payedCard);
+        } else {
+            result.setCode(1);
+            result.setMsg("提交退卡失败");
+        }
+        return result;
     }
 
     /**

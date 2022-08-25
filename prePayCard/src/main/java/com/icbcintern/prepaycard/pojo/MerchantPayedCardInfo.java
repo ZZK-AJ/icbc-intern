@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MerchantPayedCardInfo {
     private String userName;    // 购买的用户名
-    private Integer cardId;         // 预付卡 id
+    private Integer cardId;         // 用户购买的预付卡 id
     private Integer CardTypeId;     // 卡种类 id
     private Integer cardStatus;  // 预付卡状态，正常 0, 不可用 1, 已退卡 2
     private Integer reviewId;

@@ -79,6 +79,10 @@ public class ConsumeController {
     public Result getConsumeByPayCardId(@PathVariable("payed_card_id") int payed_card_id) {
         Result result = new Result();
         List<Consume> consumes = consumeService.getConsumeByPayedCardId(payed_card_id);
+
+        System.out.println("/consume/id/{payed_card_id}" + payed_card_id);
+        System.out.println(consumes);
+
         if (consumes == null) {
             result.setCode(1);
             result.setMsg("查询的消费记录不存在");
@@ -88,6 +92,7 @@ public class ConsumeController {
         }
         return result;
     }
+
     @GetMapping("/consume/consumeId/{consumeId}")
     public Result getConsumeById(@PathVariable("consumeId") int consumeId) {
         Result result = new Result();
