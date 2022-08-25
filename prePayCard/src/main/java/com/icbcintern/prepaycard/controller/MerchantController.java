@@ -216,11 +216,11 @@ public class MerchantController {
             // 根据 id 查询 用户预付卡 关系表 userCard，得到用户 id
             UserCard userCard = userCardService.getUserCardByCardId(payedCard.getId());
             if (userCard == null) {
-                return Result.setFailMsg("查询预付卡购卡用户失败", null);
+                return Result.setFailMsg("查询预付卡购卡用户关系失败", null);
             }
             User userById = userService.getUserById(userCard.getUserId()); // 获取用户名
             if (userById == null) {
-                return Result.setFailMsg("查询预付卡购卡用户失败", null);
+                return Result.setFailMsg("查询预付卡购卡用户名失败", null);
             }
 
             MerchantPayedCardInfo merchantPayedCardInfo = new MerchantPayedCardInfo(userById.getName(), payedCard.getId(), payedCard.getCardId(), payedCard.getCardStatus(), card.getReviewId(), card.getMerchantId(), card.getWalletId(), card.getCardName(), card.getCardType(), card.getCardInfo(), card.getCardAmount(), card.getGiftAmount(), card.getDiscountRate());
