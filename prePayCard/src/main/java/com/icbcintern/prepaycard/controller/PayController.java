@@ -9,6 +9,8 @@ import com.icbcintern.prepaycard.service.UserService;
 import com.icbcintern.prepaycard.service.WalletService;
 import com.icbcintern.prepaycard.utils.JwtTools;
 import com.icbcintern.prepaycard.utils.Result;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -198,6 +201,32 @@ public class PayController {
         return result;
     }
 
+    @GetMapping("/payCard/user/{userId}/multi")
+    public Result getMultiPayedCardByUserId(@PathVariable("userId") int userId) {
+        @AllArgsConstructor
+        @Data
+        class Multi {
+            Card card;
+            PayedCard payedCard;
+        }
+        Result result = new Result();
+        List<PayedCard> cards = payService.getPayedCardByUserId(userId);
+
+        if (cards == null) {
+            result.setCode(1);
+            result.setMsg("查询用户未购买预付卡");
+        } else {
+            List<Object> multis = new ArrayList<>();
+            for (PayedCard payedCard : cards) {
+                Card card = cardService.getCardById(payedCard.getCardId());
+                multis.add(new Multi(card, payedCard));
+            }
+            Result.ok();
+            result.setData(multis);
+        }
+        return result;
+    }
+
     @GetMapping("/payCard/balance/{payCardId}")
     public Result getBalanceByPayCardId(@PathVariable("payCardId") int payCardId) throws Exception {
         PayedCard payedCard = payService.getPayedCardById(payCardId);
@@ -269,8 +298,8 @@ public class PayController {
         PayedCard payedCard = payService.getPayedCardById(payedCardId);
 
         Integer instanceId = payedCard.getInstanceId();
-        Result result = contractService.recharge(instanceId,money);
-        if (result.getCode()!=0){
+        Result result = contractService.recharge(instanceId, money);
+        if (result.getCode() != 0) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
         return result;
