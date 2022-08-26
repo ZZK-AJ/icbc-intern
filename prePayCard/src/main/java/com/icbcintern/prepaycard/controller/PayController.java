@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -198,7 +199,7 @@ public class PayController {
     }
 
     @GetMapping("/payCard/balance/{payCardId}")
-    public Result getBalanceByPayCardId(@PathVariable("payCardId") int payCardId) {
+    public Result getBalanceByPayCardId(@PathVariable("payCardId") int payCardId) throws Exception {
         PayedCard payedCard = payService.getPayedCardById(payCardId);
         Integer instanceId = payedCard.getInstanceId();
         Long balance = contractService.getBalance(instanceId);
@@ -230,4 +231,40 @@ public class PayController {
         return result;
     }
 
+    @PostMapping("/payCard/recharge")
+    @Transactional
+    public Result Recharge(@RequestHeader("Authorization") String token,
+                           @RequestBody Map<String,String> body) throws Exception {
+
+        Integer payedCardId = Integer.valueOf(body.get("payedCardId"));
+        Long money= Long.valueOf(body.get("money"));
+
+        DecodedJWT jwt = JwtTools.verifyToken(token);   // 解析 token, 获取用户名
+        if (jwt == null || StringUtils.isEmpty(jwt.getClaim("userName").asString())) {
+            return Result.setFailMsg("token 不合法", null);
+        }
+        String userName = jwt.getClaim("userName").asString();
+        User user = userService.getUserByUserName(userName);  // 获取用户信息
+        String userWalletId = userService.getWalletIdByUserId(user.getId());  // 获取 用户钱包关系表 用户钱包id
+        Wallet userWallet = walletService.getWalletByWalletId(userWalletId);
+        long setUserBalance = userWallet.getBalance() - money;
+        if (setUserBalance < 0) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.setFailMsg("用户余额不足", null);
+        }
+        userWallet.setBalance(setUserBalance);
+        Boolean aBoolean = walletService.updateWalletByWalletId(userWallet);
+        if (!aBoolean) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.setFailMsg("未成功从用户钱包扣款", null);
+        }
+        PayedCard payedCard = payService.getPayedCardById(payedCardId);
+
+        Integer instanceId = payedCard.getInstanceId();
+        Result result = contractService.recharge(instanceId,money);
+        if (result.getCode()!=0){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+        return result;
+    }
 }

@@ -1,5 +1,8 @@
 package com.icbcintern.prepaycard.pojo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class User extends Entity {
     private String payPasswd;
 
@@ -21,5 +24,15 @@ public class User extends Entity {
 
     public void setPayPasswd(String payPasswd) {
         this.payPasswd = payPasswd;
+    }
+
+    @Override
+    public String toString() {
+        ObjectMapper json = new ObjectMapper();
+        try {
+            return json.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            return String.format("User(%s,%s,%s,%s)",id,name,loginPasswd,payPasswd);
+        }
     }
 }

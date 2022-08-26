@@ -67,8 +67,12 @@ public class SqlUpdateWallet extends ImFunc{
             argv.set(0,-1);
             return;
         }
-        if (w.getBalance()>0L||w.getType()!=0){
+        if (w.getBalance()>0L&&w.getType()==0){
             argv.set(0,-2);
+            return;
+        }
+        if(w.getType()!=0&&w.getType()!=3){
+            argv.set(0,-3);
             return;
         }
         walletMapper.updateWalletByWalletId(wallet);

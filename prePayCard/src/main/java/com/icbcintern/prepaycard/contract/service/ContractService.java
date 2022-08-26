@@ -2,6 +2,7 @@ package com.icbcintern.prepaycard.contract.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.icbcintern.prepaycard.contract.Aop.ContractLog;
 import com.icbcintern.prepaycard.contract.dao.ContractDao;
 import com.icbcintern.prepaycard.contract.pojo.Contract;
 import com.icbcintern.prepaycard.contract.pojo.ContractInstance;
@@ -26,6 +27,21 @@ public class ContractService {
     @Autowired
     ContractDao contractDao;
 
+    public static HashMap<String, String> ERROR_MESSAGES = new HashMap<>();
+
+    static {
+        ERROR_MESSAGES.put("Transaction failed", "交易失败");
+        ERROR_MESSAGES.put("Unavailable card", "预付卡不可用");
+        ERROR_MESSAGES.put("Unavailable payment account", "退款账户不可用");
+        ERROR_MESSAGES.put("Not enough balance", "预付卡余额不足");
+        ERROR_MESSAGES.put("Wrong parameter", "支付参数错误");
+        ERROR_MESSAGES.put("Wrong WalletId","此预付卡暂不支持在该商户消费");
+        ERROR_MESSAGES.put("success", "执行成功");
+    }
+
+    public static String ERROR_MESSAGE(String key) {
+        return ERROR_MESSAGES.getOrDefault(key, "未知错误");
+    }
 
     public List<Contract> getAllContract() {
         return contractDao.getAllContract();
@@ -35,6 +51,7 @@ public class ContractService {
         return contractDao.getValidContract();
     }
 
+    @ContractLog
     public boolean destroyInstance(Integer contractInstanceId) {
         ContractInstance contractInstance = contractDao.getContractInstanceById(contractInstanceId);
         contractInstance.setState(1);
@@ -42,11 +59,13 @@ public class ContractService {
         return effectNum > 0;
     }
 
+    @ContractLog
     public int deploy(Contract contract) {
         contractDao.insertContract(contract);
         return contract.getContractId();
     }
 
+    @ContractLog
     public boolean destroy(Integer contractId) {
         Contract contract = contractDao.getContractById(contractId);
         if (contract == null) return false;
@@ -62,6 +81,7 @@ public class ContractService {
      * @return 生成的合约实例id
      * @throws Exception 合约路径无效导致的异常
      */
+    @ContractLog
     public int signContract(int payedCardId, int contractId) throws Exception {
         Contract contract = contractDao.getContractById(contractId);
         int state = contract.getState();
@@ -82,11 +102,12 @@ public class ContractService {
     /**
      *
      * @param contractInstanceId 合约实例id
-     * @param money 付款金额
+     * @param money 充值金额
      * @return 执行结果
-     * @Exception 数据解析异常
+     * @throws Exception 数据解析异常
      */
-    public Result transfer(int contractInstanceId, long money) throws Exception {
+    @ContractLog
+    public Result recharge(int contractInstanceId, long money) throws Exception {
         Instance instance = null;
         try {
             instance = getWasmInstanceByContractInstanceId(contractInstanceId);
@@ -96,7 +117,36 @@ public class ContractService {
         }
         StringUtils stringUtils = new StringUtils(instance);
         Object[] results = instance.exports.
-                getFunction("transfer").apply(contractInstanceId, money);
+                getFunction("recharge").apply(contractInstanceId, money);
+        Integer ptr = (Integer) results[0];
+        String json = stringUtils.getString(ptr);
+        return parseJson(json);
+    }
+
+    /**
+     * @param contractInstanceId 合约实例id
+     * @param money              付款金额
+     * @param walletId
+     * @return 执行结果
+     * @throws Exception 数据解析异常
+     */
+    @ContractLog
+    public Result transfer(int contractInstanceId, long money, String walletId) throws Exception {
+        Instance instance = null;
+        try {
+            instance = getWasmInstanceByContractInstanceId(contractInstanceId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(1, e.getMessage(), null);
+        }
+        StringUtils stringUtils = new StringUtils(instance);
+        //将walletId传进去
+        if(walletId==null){
+            walletId = "DEFAULT";
+        }
+        int walletIdPtr = stringUtils.addString(walletId);
+        Object[] results = instance.exports.
+                getFunction("transfer").apply(contractInstanceId, money,walletIdPtr);
         Integer ptr = (Integer) results[0];
         String json = stringUtils.getString(ptr);
         return parseJson(json);
@@ -108,6 +158,7 @@ public class ContractService {
      * @return 执行结果 code=0:执行成功 code=-1:执行失败
      * @throws Exception 数据解析异常
      */
+    @ContractLog
     public Result refund(int contractInstanceId) throws Exception {
         Instance instance = null;
         try {
@@ -124,7 +175,8 @@ public class ContractService {
     }
 
 
-    public Long getBalance(int contractInstanceId){
+    @ContractLog
+    public Long getBalance(int contractInstanceId) {
         Instance instance = null;
         try {
             instance = getWasmInstanceByContractInstanceId(contractInstanceId);
@@ -136,12 +188,14 @@ public class ContractService {
 
         return (Long) results[0];
     }
-    public Long getGiftBalance(int contractInstanceId){
+    @ContractLog
+    public Long getGiftBalance(int contractInstanceId) {
         Instance instance = null;
         try {
             instance = getWasmInstanceByContractInstanceId(contractInstanceId);
         } catch (Exception e) {
             return -1L;
+
         }
         Object[] results = instance.exports.
                 getFunction("get_gift_balance").apply(contractInstanceId);
@@ -174,8 +228,8 @@ public class ContractService {
         ObjectMapper jackson = new ObjectMapper();
 
         HashMap map = jackson.readValue(json, HashMap.class);
-        Result result = new Result((Integer) map.get("code"), (String) map.get("message"), map.get("data"));
-        if (result.getCode()==0&& !((boolean) map.get("success"))){
+        Result result = new Result((Integer) map.get("code"), ERROR_MESSAGE((String) map.get("message")), map.get("data"));
+        if (result.getCode() == 0 && !((boolean) map.get("success"))) {
             result.setCode(-1);
         }
         return result;

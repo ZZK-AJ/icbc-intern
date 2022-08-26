@@ -15,9 +15,9 @@ public class WalletsDao {
     private static final String password;
 
     static {
-        url = "jdbc:mysql://localhost2:3306/prePayCard?useSSL=false&useServerPrepStmts=true";
+        url = "jdbc:mysql://localhost:3306/prePayCard?useSSL=false&useServerPrepStmts=true";
         username = "root";
-        password = "root";
+        password = "123456";
     }
 
     public static long QueryBalanceById(long wallet_id) {
@@ -30,7 +30,7 @@ public class WalletsDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, wallet_id);
             ResultSet res = pstmt.executeQuery();
-            if (res.next()){
+            if (res.next()) {
                 balance = res.getLong("balance");
             }
 
@@ -56,10 +56,11 @@ public class WalletsDao {
         }
         return balance;
     }
-    public static int Transfer(long from_id,long to_id,long money) {
+
+    public static int Transfer(long from_id, long to_id, long money) {
         Connection conn = getConnect();
         PreparedStatement pstmt = null;
-        String sql = "select balance from wallet where id = ?";
+        String sql = "select balance from wallet where id = ? for update;";
         String sql_update = "update wallet set balance = ? where id =?";
         int finish = -1;
 
@@ -69,10 +70,10 @@ public class WalletsDao {
             pstmt.setLong(1, from_id);
             ResultSet res = pstmt.executeQuery();
             long fromBalance = 0;
-            if (res.next()){
+            if (res.next()) {
                 fromBalance = res.getLong("balance");
             }
-            if (fromBalance<money){
+            if (fromBalance < money) {
                 throw new Exception("账户余额不足");
             }
             //查询收款方
@@ -80,25 +81,53 @@ public class WalletsDao {
             pstmt.setLong(1, to_id);
             res = pstmt.executeQuery();
             long toBalance = 0;
-            if (res.next()){
+            if (res.next()) {
                 toBalance = res.getLong("balance");
-            }else{
+            } else {
                 throw new Exception("转帐方不存在");
             }
 
             //执行转账
             pstmt = conn.prepareStatement(sql_update);
-            pstmt.setLong(1,fromBalance-money);
+            pstmt.setLong(1, fromBalance - money);
             pstmt.setLong(2, from_id);
             pstmt.executeUpdate();
 
             pstmt = conn.prepareStatement(sql_update);
-            pstmt.setLong(1,toBalance+money);
+            pstmt.setLong(1, toBalance + money);
             pstmt.setLong(2, to_id);
             pstmt.executeUpdate();
 
+//            再读一遍余额判断是否正确
+            //查询转帐方余额
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, from_id);
+            res = pstmt.executeQuery();
+            long fromBalance2 = 0;
+            if (res.next()) {
+                fromBalance2 = res.getLong("balance");
+            }
+
+            //查询收款方
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, to_id);
+            res = pstmt.executeQuery();
+            long toBalance2 = 0;
+            if (res.next()) {
+                toBalance2 = res.getLong("balance");
+            } else {
+                throw new Exception("转帐方不存在");
+            }
+
+            if (fromBalance2 != fromBalance - money) {
+                throw new RuntimeException(fromBalance2 + " but" + (fromBalance - money));
+            }
+            if (toBalance2 != toBalance + money) {
+                throw new RuntimeException(toBalance2 + " but" + (toBalance + money));
+            }
+
             conn.commit();//提交数据
-            finish=0;
+            finish = 0;
         } catch (Exception e) {
             e.printStackTrace();
             try {
@@ -121,7 +150,7 @@ public class WalletsDao {
         return finish;
     }
 
-    private static Connection getConnect(){
+    private static Connection getConnect() {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");

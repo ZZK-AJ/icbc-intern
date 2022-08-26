@@ -1,7 +1,6 @@
 package com.icbcintern.prepaycard.contract.utils;
 
 import com.icbcintern.prepaycard.contract.function.ImFunc;
-import com.icbcintern.prepaycard.contract.function.ImQueryBalanceByWalletId;
 import com.icbcintern.prepaycard.contract.function.ImportFunction;
 import org.wasmer.Imports;
 import org.wasmer.Instance;
@@ -22,9 +21,7 @@ import java.util.List;
  **/
 public class InstanceUtils {
     public static Instance getWasmInstance(String wasmPaths) throws Exception {
-        System.out.println(wasmPaths);
 
-        System.out.println(ImQueryBalanceByWalletId.walletMapper);
         Path wasmPath = Paths.get(new URI(wasmPaths));
 
         byte[] wasmBytes = Files.readAllBytes(wasmPath);

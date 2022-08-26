@@ -50,16 +50,16 @@ public class RefundController {
 //            return new Result(1, e.toString(), null);
 //        }
 //        if (result.getCode() != 0) return result;
-//        // 修改对应预付卡id的预付卡状态
-//        if (payService.updatePayCardById(payedCard)) {
-//            Result.ok();
-//            result.setData(payedCard);
-////            return Result.setSuccessMsg("",payedCard);
+        // 修改对应预付卡id的预付卡状态
+        if (payService.updatePayCardById(payedCard)) {
+
+            result.setData(payedCard);
+//            return Result.setSuccessMsg("",payedCard);
 //        } else {
 //            Result.unOk();
 //            result.setMsg("提交退卡失败");
 ////            Result.setFailMsg("提交退卡失败", null);
-//        }
+        }
         return result;
     }
 

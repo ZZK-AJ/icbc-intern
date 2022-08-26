@@ -4,6 +4,7 @@ import com.icbcintern.prepaycard.contract.service.ContractService;
 import com.icbcintern.prepaycard.pojo.Consume;
 import com.icbcintern.prepaycard.pojo.PayedCard;
 import com.icbcintern.prepaycard.service.ConsumeService;
+import com.icbcintern.prepaycard.service.MerchantService;
 import com.icbcintern.prepaycard.service.PayService;
 import com.icbcintern.prepaycard.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class ConsumeController {
     @Autowired
     ConsumeService consumeService;
 
+    @Autowired
+    MerchantService merchantService;
     /**
      * 用户对应预付卡进行消费
      *
@@ -33,9 +36,9 @@ public class ConsumeController {
      * @return Result
      * @throws Exception 消费报错信息
      */
-    @PostMapping("/consume")
+    @PostMapping({"/consume","/consume/{merchantId}"})
     @Transactional
-    public Result consume(@RequestBody Consume consume) throws Exception {
+    public Result consume(@RequestBody Consume consume,@PathVariable(required = false) Integer merchantId) throws Exception {
         Result result = new Result();
         Integer payedCardId = consume.getPayedCardId();  // 预付卡id
         // 通过 payedCardId 查询 预付卡表，获取合约实例 id
@@ -49,8 +52,14 @@ public class ConsumeController {
         Integer instanceId = payedCard.getInstanceId();
 
         consume.setPayedTime(new Timestamp(System.currentTimeMillis()));
-
-        result = contractService.transfer(instanceId, consume.getPayedAmount());  // 执行合约进行转账
+        String walletId = null;
+        if (merchantId != null) {
+            walletId = merchantService.getMerchantWalletByMerchantId(merchantId);
+            if(walletId==null){
+                return Result.setFailMsg("商户不存在或未开通收款钱包", null);
+            }
+        }
+        result = contractService.transfer(instanceId, consume.getPayedAmount(), walletId);  // 执行合约进行转账
 
         try {
             if (result.getCode() != 0) throw new Exception("扣款失败");
@@ -59,13 +68,13 @@ public class ConsumeController {
             consume.setActualPrice(Long.valueOf(String.valueOf(data.get("actualPrice"))));
             consume.setGift(Long.valueOf(String.valueOf(data.get("gift"))));
             consume.setState(0);
-        }catch (Exception ignore){
-            consume.setState(result.getCode());
+        } catch (Exception ignore) {
+            consume.setState(result!=null?result.getCode():1);
         }
 
         Result consumeResult = consumeService.insertConsume(consume); // 写入消费记录表
         consumeResult.setCode(consume.getState());
-        if (consume.getState()!=0){
+        if (consume.getState() != 0) {
             //输出详细的错误信息
             consumeResult.setMsg(result.getMsg());
         }

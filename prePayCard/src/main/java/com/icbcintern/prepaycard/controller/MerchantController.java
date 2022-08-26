@@ -86,7 +86,9 @@ public class MerchantController {
     public Result getMerchantInfoById(@PathVariable("id") int id) {
         Result result = new Result();
         Merchant merchant = merchantService.getMerchantById(id);
+
         if (merchant != null) {
+            merchant.setLoginPasswd("");
             result.setData(merchant);
         } else {
             result.setCode(1);
