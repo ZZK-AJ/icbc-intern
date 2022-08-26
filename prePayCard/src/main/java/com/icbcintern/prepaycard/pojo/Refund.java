@@ -18,4 +18,6 @@ public class Refund {
     private Long cardAmount;
     private Integer giftAmount;
     private Integer discountRate;
+    private Long balance;
+    private Long giftBalance;
 }

@@ -49,7 +49,7 @@ public class UserController {
             Wallet wallet = new Wallet();
             wallet.setWalletId(UUID.randomUUID().toString());
             wallet.setType(1);   // 钱包类型，用户 1, 商户 2, 运营方 3, 冻结 0
-            long balance = 100000 + (long) (Math.random() * (500000 - 100000 + 1));  // 余额默认范围 1000-5000
+            long balance = 500000 + (long) (Math.random() * (500000 - 100000 + 1));  // 余额默认范围 5000-10000
             wallet.setBalance(balance);
             Boolean res = walletService.insertWallet(wallet);
             if (res) {

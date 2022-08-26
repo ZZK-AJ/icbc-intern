@@ -231,13 +231,21 @@ public class PayController {
         return result;
     }
 
+    /**
+     * 充值
+     *
+     * @param token
+     * @param body
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/payCard/recharge")
     @Transactional
     public Result Recharge(@RequestHeader("Authorization") String token,
-                           @RequestBody Map<String,String> body) throws Exception {
+                           @RequestBody Map<String, String> body) throws Exception {
 
         Integer payedCardId = Integer.valueOf(body.get("payedCardId"));
-        Long money= Long.valueOf(body.get("money"));
+        Long money = Long.valueOf(body.get("money"));
 
         DecodedJWT jwt = JwtTools.verifyToken(token);   // 解析 token, 获取用户名
         if (jwt == null || StringUtils.isEmpty(jwt.getClaim("userName").asString())) {

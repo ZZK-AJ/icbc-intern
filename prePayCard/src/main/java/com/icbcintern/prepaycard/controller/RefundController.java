@@ -94,7 +94,12 @@ public class RefundController {
                 return Result.setFailMsg("查询用户失败", null);
             }
 
-            Refund refundInfo = new Refund(payedCard.getId(), user.getName(), card.getId(), card.getCardName(), card.getCardType(), card.getCardInfo(), card.getCardAmount(), card.getGiftAmount(), card.getDiscountRate());
+            // todo 通过 payCardId 获取预付卡余额
+            Integer instanceId = payedCard.getInstanceId();
+            Long balance = contractService.getBalance(instanceId);
+            Long giftBalance = contractService.getGiftBalance(instanceId);
+
+            Refund refundInfo = new Refund(payedCard.getId(), user.getName(), card.getId(), card.getCardName(), card.getCardType(), card.getCardInfo(), card.getCardAmount(), card.getGiftAmount(), card.getDiscountRate(), balance, giftBalance);
             refundInfos.add(refundInfo);
         }
         System.out.println(refundInfos);
