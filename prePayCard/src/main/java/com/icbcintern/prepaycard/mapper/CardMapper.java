@@ -1,7 +1,6 @@
 package com.icbcintern.prepaycard.mapper;
 
 import com.icbcintern.prepaycard.pojo.Card;
-import com.icbcintern.prepaycard.pojo.Review;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface CardMapper {
 
-    @Insert("insert into Card(review_id,merchant_id,wallet_id,card_name,card_type,card_info,card_amount,gift_amount,discount_rate, expire_date) values (#{reviewId},#{merchantId},#{walletId},#{cardName},#{cardType},#{cardInfo},#{cardAmount},#{giftAmount},#{discountRate},#(expireDate))")
+    @Insert("insert into Card(review_id,merchant_id,wallet_id,card_name,card_type,card_info,card_amount,gift_amount,discount_rate, expire_date) values (#{reviewId},#{merchantId},#{walletId},#{cardName},#{cardType},#{cardInfo},#{cardAmount},#{giftAmount},#{discountRate},#{expireDate})")
 //    @SelectKey(statement = {"select LAST_INSERT_ID()"}, keyProperty = "id", before = false, resultType = Integer.class)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
         //新增时将主键返回
