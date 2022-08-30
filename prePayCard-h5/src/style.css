@@ -1,0 +1,24 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+.van-doc-demo-block__title {
+  margin: 0;
+  padding: 32px 16px 16px;
+  color: rgba(69,90,100,.6);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}
+body{
+  background-color: #f7f8fa
+}
