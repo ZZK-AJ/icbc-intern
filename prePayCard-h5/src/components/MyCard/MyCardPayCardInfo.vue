@@ -14,7 +14,7 @@
     </div>
     <div v-if="card && payCard">
         <div class="card">
-            <Card :title="card.cardName" :label="'余额:' + money" :disable="cardRefunded || cardExpired || cardRefunding"
+            <Card :title="card.cardName" :label="'可用余额:' + (cardRefunded?'0.00':money)" :disable="cardRefunded || cardExpired || cardRefunding"
                 :value="cardRefunded ? '已退卡' : cardRefunding ? '退卡中' : cardExpired ? '已过期' : ''"></Card>
 
         </div>
@@ -186,6 +186,7 @@ export default defineComponent({
             if (response.data.code === 0) {
                 balance.value = response.data.data[0];
                 giftBalance.value = response.data.data[1];
+                
                 money.value = formatMoney(balance.value + giftBalance.value);
             }
         });

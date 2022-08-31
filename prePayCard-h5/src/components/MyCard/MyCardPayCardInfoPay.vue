@@ -160,6 +160,7 @@ export default defineComponent({
 
                     cardNames.push(card.cardName + " (" + formatId(prePayCard.id).slice(-4) + ")");
                     cardName.value = cardNames[0];
+                    payCards = [];
                     payCards.push(prePayCard);
                 }
 
@@ -193,6 +194,7 @@ export default defineComponent({
                     const card = response.data.data;
                     cardNames.push(card.cardName + " (" + formatId(prePayCard.id).slice(-4) + ")");
                     cardName.value = cardNames[0];
+                    payCards = [];
                     payCards.push(prePayCard);
                 }
             }

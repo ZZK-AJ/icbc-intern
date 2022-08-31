@@ -37,10 +37,10 @@ export default defineComponent({
     },
 })
 </script>
-<style>
+<style scoped>
 .logged .userName {
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 24px;
+    /* font-weight: bold; */
     height: 1rem;
     line-height: 1rem;
 }
