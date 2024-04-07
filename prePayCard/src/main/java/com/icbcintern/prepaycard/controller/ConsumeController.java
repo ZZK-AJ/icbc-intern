@@ -32,6 +32,8 @@ public class ConsumeController {
     /**
      * 用户对应预付卡进行消费
      *
+     * 增加本地修改内容
+     *
      * @param consume 消费记录
      * @return Result
      * @throws Exception 消费报错信息
